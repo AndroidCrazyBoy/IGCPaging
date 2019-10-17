@@ -1,7 +1,5 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
 
 android {
@@ -40,5 +38,6 @@ dependencies {
     implementation deps.glide.runtime
     annotationProcessor deps.glide.compiler
 
+//    implementation deps.paging
     implementation project(':paginglibrary')
 }

@@ -171,7 +171,8 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
 
             when (state) {
                 NetworkState.IDEAL,
-                NetworkState.LOADED -> {
+                NetworkState.LOADED,
+                NetworkState.COMPLETE_WITHOUT_TEXT -> {
                     loadMoreView?.visibility = View.GONE
                     loadFinishView?.visibility = View.GONE
                 }

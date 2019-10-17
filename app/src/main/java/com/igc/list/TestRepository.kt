@@ -1,7 +1,7 @@
 package com.igc.list
 
 import com.igc.list.paging.DataSource
-import com.igc.list.paging.toListing
+import com.igc.list.paging.fetchPaing
 
 /**
  * @author baolongxiang
@@ -13,6 +13,6 @@ class TestRepository : DataSource.DataFactory<String, String> {
     }
 
     fun getTestData(param: String): Listing<String> {
-        return toListing("TEST")
+        return fetchPaing(param)
     }
 }

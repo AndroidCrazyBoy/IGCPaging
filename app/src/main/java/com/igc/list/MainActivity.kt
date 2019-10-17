@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
                 .into(recyclerView, refreshLayout)
                 .build(this)
 
-        // 也可以这么写
+        // 也可以这么写、
         // listManager.bindWith(repository.getTestData("TEST PAGING"))
     }
 

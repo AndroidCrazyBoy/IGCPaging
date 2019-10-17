@@ -11,7 +11,8 @@ enum class Status {
     SUCCESS,
     FAILED,
     IDEAL,
-    COMPLETE
+    COMPLETE,
+    COMPLETE_WITHOUT_HOLD
 }
 
 @Keep
@@ -24,6 +25,7 @@ data class NetworkState private constructor(
         val LOADING = NetworkState(Status.RUNNING)
         val COMPLETE = NetworkState(Status.COMPLETE)
         val IDEAL = NetworkState(Status.IDEAL)
+        val COMPLETE_WITHOUT_TEXT = NetworkState(Status.COMPLETE_WITHOUT_HOLD)
         fun error(msg: String?) = NetworkState(Status.FAILED, msg)
     }
 }

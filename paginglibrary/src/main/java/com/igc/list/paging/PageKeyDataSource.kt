@@ -23,8 +23,6 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
 
     private var retry: (() -> Any)? = null
 
-    private var resultType: Int = PageResult.INIT
-
     private var pageCount = INIT_PAGE_COUNT
 
     override fun dispatchLoadInitial(key: Key?, pageSize: Int, receiver: PageResult.Receiver<Value>) {
@@ -72,7 +70,7 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
         (loadMoreState.value == NetworkState.LOADED
                 || loadMoreState.value == NetworkState.IDEAL
                 || loadMoreState.value?.status == Status.FAILED)
-                && resultType != PageResult.FINISHED
+                && loadMoreState.value != NetworkState.COMPLETE
 
     abstract fun loadInitial(params: LoadParams, callback: LoadCallback<Value>)
 
@@ -81,16 +79,18 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
     inner class LoadParams(var key: Key?, val pageSize: Int, val pageIndex: Int)
 
     inner class LoadCallbackImpl<Value>(val type: Int, val receiver: PageResult.Receiver<Value>) : LoadCallback<Value> {
-        override fun onFinish() {
+        override fun onFinish(withoutHold: Boolean) {
             Logger.d("TEST ---->LoadCallbackImpl onFinish")
-            resultType = PageResult.FINISHED
             initialLoad.value = NetworkState.COMPLETE
-            loadMoreState.value = NetworkState.COMPLETE
+            if (withoutHold) {
+                loadMoreState.value = NetworkState.COMPLETE_WITHOUT_TEXT
+            } else {
+                loadMoreState.value = NetworkState.COMPLETE
+            }
             receiver.onPageResult(PageResult.FINISHED, PageResult(Collections.emptyList()))
         }
 
         override fun onResult(data: List<Value>) {
-            resultType = type
             when (type) {
                 PageResult.INIT -> initialLoad.value = NetworkState.LOADED
                 PageResult.APPEND -> loadMoreState.value = NetworkState.LOADED
@@ -101,7 +101,6 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
 
         override fun onError(error: Throwable) {
             pageCount--
-            resultType = type
             when (type) {
                 PageResult.INIT -> initialLoad.value = NetworkState.error(error.message)
                 PageResult.APPEND -> loadMoreState.value = NetworkState.error(error.message)
@@ -122,7 +121,8 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
 
         /**
          * 加载完成(不在粗发上拉加载, 并且显示完成文案)
+         * @param withoutHold 是否显示占位文本
          */
-        fun onFinish()
+        fun onFinish(withoutHold: Boolean = false)
     }
 }

@@ -21,7 +21,7 @@ private fun <Key, Value> DataSource.DataFactory<Key, Value>.toLiveData(
 /**
  * pageList组装成listing
  */
-fun <Key, Value> DataSource.DataFactory<Key, Value>.toListing(
+fun <Key, Value> DataSource.DataFactory<Key, Value>.fetchPaing(
     key: Key? = null,
     config: PageList.Config = GlobalListInitializer.instance.getPagingConfig()
 ): Listing<Value> {

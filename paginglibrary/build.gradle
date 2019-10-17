@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'maven'
 
 android {
 
@@ -37,3 +38,49 @@ dependencies {
     implementation deps.logger
     implementation deps.lifecycle.extensions
 }
+
+uploadArchives {
+    configuration = configurations.archives
+    repositories {
+        mavenDeployer {
+            repository(url: 'http://app.mvn-int.igetcool.com/repository/igetcool/') {
+                authentication(userName: 'igetcool_pub', password: '123456')
+            }
+            pom.project {
+                version 'beat-1.0.1'
+                artifactId 'auto-paging'
+                groupId 'com.igetcool.paging'
+                packaging 'paging'
+                description '自动分页框架'
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+//生成文档注释
+task androidJavadocs(type: Javadoc) {
+    failOnError = false
+    source = android.sourceSets.main.java.srcDirs
+    ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+    classpath += files(ext.androidJar)
+}
+//将文档打包成jar
+task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+    classifier = 'javadoc'
+    from androidJavadocs.destinationDir
+}
+//将源码打包
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+//包含文档和源码的aar
+artifacts {
+    archives androidSourcesJar
+    archives androidJavadocsJar
+}
+
