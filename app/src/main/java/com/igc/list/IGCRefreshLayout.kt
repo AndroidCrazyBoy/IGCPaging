@@ -12,21 +12,22 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshListener
  * @createTime 2019-09-23
  */
 class IGCRefreshLayout @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0
 ) : SmartRefreshLayout(context, attrs, defStyleAttr), IRefreshLayout, OnRefreshListener {
 
     private var refreshListener: IRefreshLayout.PullRefreshListener? = null
 
     init {
         setRefreshHeader(ClassicsHeader(context))
+        setEnableRefresh(true)
         setEnableLoadMore(false)
         setOnRefreshListener(this)
     }
 
     override fun onRefresh(refreshLayout: RefreshLayout) {
-        refreshListener?.onRefresh()
+        refreshListener?.onRefresh(this)
     }
 
     override fun finishPullRefresh() {

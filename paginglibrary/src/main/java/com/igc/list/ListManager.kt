@@ -25,7 +25,8 @@ class ListManager(val builder: Builder) : ViewModel(), IRefreshLayout.PullRefres
             throw NullPointerException("ListManager adapter or layoutManager or recyclerView must not be null")
         }
         builder.recyclerView!!.layoutManager = builder.layoutManager
-        builder.recyclerView!!.adapter = if (builder.enableLoadMore) PagingAdapterWrapper(builder.adapter!!) else (builder.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
+        builder.recyclerView!!.adapter =
+                if (builder.enableLoadMore) PagingAdapterWrapper(builder.adapter!!) else (builder.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
         // 上拉加载
         if (builder.enableLoadMore) {
             val adapter = builder.recyclerView!!.adapter as PagingAdapterWrapper
@@ -40,7 +41,7 @@ class ListManager(val builder: Builder) : ViewModel(), IRefreshLayout.PullRefres
             if (builder.autoRefresh) refreshLayout.autoRefresh()
         }
         // 绑定listing（数据及状态）
-        if (builder.listing != null) {
+        if (builder.listing != null && !builder.autoRefresh) {
             bindWith(builder.listing!!)
         }
     }
@@ -98,8 +99,13 @@ class ListManager(val builder: Builder) : ViewModel(), IRefreshLayout.PullRefres
         })
     }
 
-    override fun onRefresh() {
-        refresh()
+    override fun onRefresh(refreshLayout: IRefreshLayout) {
+        // 自动刷新需要在onRefresh中绑定
+        if (listing == null && builder.listing != null) {
+            bindWith(builder.listing!!)
+        } else {
+            refresh()
+        }
     }
 
     /**

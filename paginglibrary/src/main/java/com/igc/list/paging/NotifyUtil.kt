@@ -50,6 +50,7 @@ class NotifyUtil(val adapter: IPagingAdapter) {
     fun <T> submitList(pageList: PageList<T>) {
         this.pageList = pageList
         this.adapter.itemData = pageList
+        this.adapter.notifyDataSetChanged()
         pageList.addNotifyCallback(notifyCallback)
     }
 

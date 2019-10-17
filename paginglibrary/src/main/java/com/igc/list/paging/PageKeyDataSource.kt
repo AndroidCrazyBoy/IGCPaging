@@ -42,7 +42,7 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
     override fun dispatchLoadAfter(key: Key?, pageSize: Int, receiver: PageResult.Receiver<Value>) {
         Logger.d("TEST ---->dispatchLoadAfter LOADING")
         // 加载完毕不需要进行分发下一页请求
-        if (loadMoreState.value == NetworkState.COMPLETE) {
+        if (loadMoreState.value == NetworkState.COMPLETE || initialLoad.value == NetworkState.LOADING) {
             Logger.d("TEST ---->dispatchLoadAfter COMPLETE")
             return
         }
@@ -79,14 +79,17 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
     inner class LoadParams(var key: Key?, val pageSize: Int, val pageIndex: Int)
 
     inner class LoadCallbackImpl<Value>(val type: Int, val receiver: PageResult.Receiver<Value>) : LoadCallback<Value> {
-        override fun onFinish(withoutHold: Boolean) {
+        override fun onFinish() {
             Logger.d("TEST ---->LoadCallbackImpl onFinish")
             initialLoad.value = NetworkState.COMPLETE
-            if (withoutHold) {
-                loadMoreState.value = NetworkState.COMPLETE_WITHOUT_TEXT
-            } else {
-                loadMoreState.value = NetworkState.COMPLETE
-            }
+            loadMoreState.value = NetworkState.COMPLETE
+            receiver.onPageResult(PageResult.FINISHED, PageResult(Collections.emptyList()))
+        }
+
+        override fun onFinishWithoutNoMoreData() {
+            Logger.d("TEST ---->LoadCallbackImpl onFinishWithoutNoMoreData")
+            initialLoad.value = NetworkState.COMPLETE
+            loadMoreState.value = NetworkState.COMPLETE_WITHOUT_TEXT
             receiver.onPageResult(PageResult.FINISHED, PageResult(Collections.emptyList()))
         }
 
@@ -120,9 +123,13 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
         fun onError(error: Throwable)
 
         /**
-         * 加载完成(不在粗发上拉加载, 并且显示完成文案)
-         * @param withoutHold 是否显示占位文本
+         * 加载完成
          */
-        fun onFinish(withoutHold: Boolean = false)
+        fun onFinish()
+
+        /**
+         * 加载完成(没有加载完成的文案占位)
+         */
+        fun onFinishWithoutNoMoreData()
     }
 }
