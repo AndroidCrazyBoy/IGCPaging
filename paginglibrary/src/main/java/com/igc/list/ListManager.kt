@@ -26,7 +26,7 @@ class ListManager(val builder: Builder) : ViewModel(), IRefreshLayout.PullRefres
         }
         builder.recyclerView!!.layoutManager = builder.layoutManager
         builder.recyclerView!!.adapter =
-                if (builder.enableLoadMore) PagingAdapterWrapper(builder.adapter!!) else (builder.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
+            if (builder.enableLoadMore) PagingAdapterWrapper(builder.adapter!!) else (builder.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
         // 上拉加载
         if (builder.enableLoadMore) {
             val adapter = builder.recyclerView!!.adapter as PagingAdapterWrapper
@@ -38,10 +38,9 @@ class ListManager(val builder: Builder) : ViewModel(), IRefreshLayout.PullRefres
         if (builder.refreshLayout != null) {
             val refreshLayout = builder.refreshLayout!!
             refreshLayout.setOnPullRefreshListener(this)
-            if (builder.autoRefresh) refreshLayout.autoRefresh()
         }
         // 绑定listing（数据及状态）
-        if (builder.listing != null && !builder.autoRefresh) {
+        if (builder.listing != null) {
             bindWith(builder.listing!!)
         }
     }
@@ -100,12 +99,7 @@ class ListManager(val builder: Builder) : ViewModel(), IRefreshLayout.PullRefres
     }
 
     override fun onRefresh(refreshLayout: IRefreshLayout) {
-        // 自动刷新需要在onRefresh中绑定
-        if (listing == null && builder.listing != null) {
-            bindWith(builder.listing!!)
-        } else {
-            refresh()
-        }
+        refresh()
     }
 
     /**
@@ -162,11 +156,6 @@ class ListManager(val builder: Builder) : ViewModel(), IRefreshLayout.PullRefres
         internal var enableLoadMore: Boolean = true
 
         /**
-         * 是否需要自动刷新
-         */
-        internal var autoRefresh = false
-
-        /**
          * 加载更多和下拉刷新样式
          */
         internal var layoutHolder: IListHolderLayout? = null
@@ -190,11 +179,6 @@ class ListManager(val builder: Builder) : ViewModel(), IRefreshLayout.PullRefres
 
         fun setCustomLayout(layout: IListHolderLayout): Builder {
             this.layoutHolder = layout
-            return this
-        }
-
-        fun autoRefresh(): Builder {
-            autoRefresh = true
             return this
         }
 

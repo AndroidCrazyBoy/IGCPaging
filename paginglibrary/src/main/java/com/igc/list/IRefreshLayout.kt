@@ -6,11 +6,6 @@ package com.igc.list
  */
 interface IRefreshLayout {
 
-    /**
-     * 显示刷新动画，触发事件
-     */
-    fun autoRefresh(): Boolean
-
     fun finishPullRefresh()
 
     fun setOnPullRefreshListener(listener: PullRefreshListener)

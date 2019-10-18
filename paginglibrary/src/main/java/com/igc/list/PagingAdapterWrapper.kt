@@ -37,6 +37,8 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
      */
     private var loadFinishView: View? = null
 
+    private var enableLoadMore: Boolean = false
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == TYPE_APPEND) {
             AppendViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_append, parent, false))
@@ -85,7 +87,7 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
     }
 
     private fun hasExtraRow(): Boolean {
-        return loadMoreState != NetworkState.IDEAL
+        return enableLoadMore && notifyUtil.getItemCount() > 0
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -107,6 +109,7 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
     }
 
     fun enableLoadMore(enableLoadMore: Boolean) {
+        this.enableLoadMore = enableLoadMore
         notifyUtil.enableLoadMore(enableLoadMore)
     }
 

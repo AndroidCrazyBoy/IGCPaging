@@ -9,7 +9,7 @@ import com.igc.list.paging.PageList
  * class that is necessary for a UI to show a listing
  */
 @Keep
-class Listing<T>(
+data class Listing<T>(
     /**
      * list数据
      */

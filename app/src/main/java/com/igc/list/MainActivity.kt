@@ -16,13 +16,14 @@ class MainActivity : AppCompatActivity() {
         val listManager = ListManager.Builder()
                 .with(buildAdapter())
                 .setLayoutManager(LinearLayoutManager(this))
-                .autoRefresh()
                 .bindWith(repository.getTestData("TEST PAGING"))
                 .into(recyclerView, refreshLayout)
                 .build(this)
 
         // 也可以这么写、
         // listManager.bindWith(repository.getTestData("TEST PAGING"))
+
+        refreshLayout.autoRefresh()
     }
 
     private fun buildAdapter(): IGCPagingAdapter {
