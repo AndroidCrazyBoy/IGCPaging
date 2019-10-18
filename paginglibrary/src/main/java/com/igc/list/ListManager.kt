@@ -4,6 +4,7 @@ import android.arch.lifecycle.*
 import android.content.Context
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import com.igc.list.paging.PageList
 import com.igc.list.paging.NetworkState
@@ -16,15 +17,15 @@ import com.orhanobut.logger.Logger
  * @createTime 2019-07-01
  */
 @Suppress("UNCHECKED_CAST")
-class ListManager(val builder: Builder) : ViewModel(), IRefreshLayout.PullRefreshListener {
+class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.PullRefreshListener {
 
     private var listing: Listing<*>? = null
 
     init {
-        if (builder.adapter == null || builder.layoutManager == null || builder.recyclerView == null) {
-            throw NullPointerException("ListManager adapter or layoutManager or recyclerView must not be null")
+        if (builder.adapter == null || builder.recyclerView == null) {
+            throw NullPointerException("ListManager adapter or recyclerView must not be null")
         }
-        builder.recyclerView!!.layoutManager = builder.layoutManager
+        builder.recyclerView!!.layoutManager = builder.layoutManager ?: LinearLayoutManager(builder.context)
         builder.recyclerView!!.adapter =
             if (builder.enableLoadMore) PagingAdapterWrapper(builder.adapter!!) else (builder.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
         // 上拉加载
@@ -41,7 +42,7 @@ class ListManager(val builder: Builder) : ViewModel(), IRefreshLayout.PullRefres
         }
         // 绑定listing（数据及状态）
         if (builder.listing != null) {
-            bindWith(builder.listing!!)
+            bindPageList(builder.listing!!)
         }
     }
 
@@ -74,7 +75,7 @@ class ListManager(val builder: Builder) : ViewModel(), IRefreshLayout.PullRefres
     /**
      * 将listing与ListManager绑定
      */
-    fun <T> bindWith(listing: Listing<T>) {
+    fun <T> bindPageList(listing: Listing<T>) {
         this.listing = listing
         listing.pagedList?.observe(builder.lifecycleOwner, Observer {
             submitList(it)
@@ -162,7 +163,7 @@ class ListManager(val builder: Builder) : ViewModel(), IRefreshLayout.PullRefres
 
         internal lateinit var lifecycleOwner: LifecycleOwner
 
-        fun with(adapter: IPagingAdapter): Builder {
+        fun setAdapter(adapter: IPagingAdapter): Builder {
             this.adapter = adapter
             return this
         }
@@ -188,7 +189,7 @@ class ListManager(val builder: Builder) : ViewModel(), IRefreshLayout.PullRefres
             return this
         }
 
-        fun <T> bindWith(listing: Listing<T>?): Builder {
+        fun <T> bindPageList(listing: Listing<T>?): Builder {
             this.listing = listing
             return this
         }
