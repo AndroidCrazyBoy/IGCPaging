@@ -15,7 +15,6 @@ class MainActivity : AppCompatActivity() {
 
         val listManager = ListManager.Builder()
                 .setAdapter(buildAdapter())
-                .setLayoutManager(LinearLayoutManager(this))
                 .bindPageList(repository.getTestData("TEST PAGING"))
                 .into(recyclerView, refreshLayout)
                 .build(this)

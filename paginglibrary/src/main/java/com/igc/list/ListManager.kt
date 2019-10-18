@@ -49,7 +49,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
     /**
      * 给recyclerview设置数据 <===> adapter.setData
      */
-    fun submitList(pageList: PageList<*>?) {
+    private fun submitList(pageList: PageList<*>?) {
         if (pageList == null) {
             Logger.e("ListManager submitList -> pageList is null")
             return
@@ -62,7 +62,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
     /**
      * 设置上拉加载的状态
      */
-    fun setLoadedState(state: NetworkState?) {
+    private fun setLoadedState(state: NetworkState?) {
         if (state == null) {
             Logger.e("ListManager setLoadedState -> state is null")
             return

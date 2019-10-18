@@ -9,8 +9,6 @@ import com.igc.list.paging.PageKeyDataSource
  */
 class TestDataSource : PageKeyDataSource<String, String>() {
 
-    private var itemIndex = 0
-
     private val handler: Handler = Handler()
 
     override fun loadInitial(params: LoadParams, callback: LoadCallback<String>) {
@@ -28,6 +26,8 @@ class TestDataSource : PageKeyDataSource<String, String>() {
             }
         }, 300)
     }
+
+    private var itemIndex = 0
 
     private fun createTestData(key: String?, pageSize: Int): MutableList<String> {
         val result = mutableListOf<String>()
