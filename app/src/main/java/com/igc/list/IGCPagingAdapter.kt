@@ -10,7 +10,13 @@ import me.drakeet.multitype.MultiTypeAdapter
  */
 class IGCPagingAdapter(val callback: DiffUtil.Callback? = null) : MultiTypeAdapter(), IPagingAdapter {
     override var itemData: PageList<*>
-        get() = items as PageList<*>
+        get() : PageList<*> {
+            if (items is PageList<*>) {
+                return items as PageList<*>
+            } else {
+                throw IllegalArgumentException("IGCPagingAdapter data must be use PageList")
+            }
+        }
         set(value) {
             items = value
         }

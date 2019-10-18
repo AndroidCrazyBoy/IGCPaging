@@ -37,7 +37,7 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
      */
     private var loadFinishView: View? = null
 
-    private var enableLoadMore: Boolean = false
+    private var enableLoadMore: Boolean = true
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == TYPE_APPEND) {
