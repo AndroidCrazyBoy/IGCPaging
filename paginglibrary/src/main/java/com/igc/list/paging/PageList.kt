@@ -1,7 +1,6 @@
 package com.igc.list.paging
 
 import android.support.annotation.Keep
-import kotlin.collections.AbstractList
 import kotlin.collections.ArrayList
 
 /**
@@ -9,7 +8,7 @@ import kotlin.collections.ArrayList
  * @author baolongxiang
  * @createTime 2019-07-05
  */
-abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractList<T>() {
+abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : ArrayList<T>() {
 
     /**
      * 每一页数据（总数据）
@@ -73,12 +72,20 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
         return pageStore.get(index)
     }
 
-    fun add(t: T) {
-        pageStore.add(t)
+    override fun removeAt(index: Int): T {
+        return pageStore.removeAt(index)
     }
 
-    fun add(index: Int, t: T) {
-        pageStore.add(index, t)
+    override fun remove(element: T): Boolean {
+        return pageStore.remove(element)
+    }
+
+    override fun add(element: T): Boolean {
+        return pageStore.add(element)
+    }
+
+    override fun add(index: Int, element: T) {
+        pageStore.add(index, element)
     }
 
     fun loadAround(index: Int) {

@@ -19,15 +19,16 @@ import com.orhanobut.logger.Logger
 @Suppress("UNCHECKED_CAST")
 class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.PullRefreshListener {
 
-    private var listing: Listing<*>? = null
+    private var listing: Listing<Any>? = null
 
     init {
         if (builder.adapter == null || builder.recyclerView == null) {
             throw NullPointerException("ListManager adapter or recyclerView must not be null")
         }
-        builder.recyclerView!!.layoutManager = builder.layoutManager ?: LinearLayoutManager(builder.context)
+        builder.recyclerView!!.layoutManager = builder.layoutManager
+                ?: LinearLayoutManager(builder.context)
         builder.recyclerView!!.adapter =
-            if (builder.enableLoadMore) PagingAdapterWrapper(builder.adapter!!) else (builder.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
+                if (builder.enableLoadMore) PagingAdapterWrapper(builder.adapter!!) else (builder.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
         // 上拉加载
         if (builder.enableLoadMore) {
             val adapter = builder.recyclerView!!.adapter as PagingAdapterWrapper
@@ -49,7 +50,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
     /**
      * 给recyclerview设置数据 <===> adapter.setData
      */
-    private fun submitList(pageList: PageList<*>?) {
+    private fun submitList(pageList: PageList<Any>?) {
         if (pageList == null) {
             Logger.e("ListManager submitList -> pageList is null")
             return
@@ -75,7 +76,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
     /**
      * 将listing与ListManager绑定
      */
-    fun <T> bindPageList(listing: Listing<T>) {
+    fun bindPageList(listing: Listing<Any>) {
         this.listing = listing
         listing.pagedList?.observe(builder.lifecycleOwner, Observer {
             submitList(it)
@@ -97,6 +98,10 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
                 }
             }
         })
+    }
+
+    fun changePageList(block: (old: PageList<Any>?) -> PageList<Any>?) {
+        listing?.pagedList?.value = block.invoke(listing?.pagedList?.value)
     }
 
     override fun onRefresh(refreshLayout: IRefreshLayout) {
@@ -153,7 +158,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
 
         internal var layoutManager: RecyclerView.LayoutManager? = null
 
-        internal var listing: Listing<*>? = null
+        internal var listing: Listing<Any>? = null
 
         /**
          * 是否需要上拉加载
@@ -193,8 +198,8 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
             return this
         }
 
-        fun <T> bindPageList(listing: Listing<T>?): Builder {
-            this.listing = listing
+        fun <T : Any> bindPageList(listing: Listing<T>?): Builder {
+            this.listing = listing as Listing<Any>
             return this
         }
 

@@ -14,10 +14,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val listManager = ListManager.Builder()
-            .setAdapter(buildAdapter())
-            .bindPageList(repository.getTestData("TEST PAGING"))
-            .into(recyclerView, refreshLayout)
-            .build(this)
+                .setAdapter(buildAdapter())
+                .bindPageList(repository.getTestData("TEST PAGING"))
+                .into(recyclerView, refreshLayout)
+                .build(this)
 
 
         listManager.getRefreshState { state ->
@@ -26,11 +26,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 也可以这么写、
-        // listManager.bindPageList(repository.getTestData("TEST PAGING"))
+        test.setOnClickListener {
+            listManager.changePageList {
+                it?.removeAt(0)
+                it
+//                return@changePageList it
+            }
+        }
 
+//         listManager.bindPageList(repository.getTestData("TEST PAGING"))
 //        refreshLayout.autoRefresh()
-
     }
 
     private fun buildAdapter(): IGCPagingAdapter {
