@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
 
 
         listManager.getRefreshState { state ->
-            if (state == Status.FAILED) {
+            if (state?.status == Status.FAILED) {
                 // fail
             }
         }
