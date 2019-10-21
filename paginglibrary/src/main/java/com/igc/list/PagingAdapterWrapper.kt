@@ -5,9 +5,9 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.igc.list.paging.PageList
 import com.igc.list.paging.NetworkState
 import com.igc.list.paging.NotifyUtil
+import com.igc.list.paging.PageList
 import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.item_append.view.*
 import java.util.*

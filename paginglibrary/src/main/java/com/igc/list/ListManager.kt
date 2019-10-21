@@ -6,8 +6,8 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import com.igc.list.paging.PageList
 import com.igc.list.paging.NetworkState
+import com.igc.list.paging.PageList
 import com.igc.list.paging.Status
 import com.orhanobut.logger.Logger
 
@@ -17,7 +17,8 @@ import com.orhanobut.logger.Logger
  * @createTime 2019-07-01
  */
 @Suppress("UNCHECKED_CAST")
-class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.PullRefreshListener {
+class ListManager(private val builder: Builder) : ViewModel(),
+    IRefreshLayout.PullRefreshListener {
 
     private var listing: Listing<Any>? = null
 

@@ -1,7 +1,6 @@
 package com.igc.list.paging
 
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Transformations
 import com.igc.list.GlobalListInitializer
 import com.igc.list.Listing
 
