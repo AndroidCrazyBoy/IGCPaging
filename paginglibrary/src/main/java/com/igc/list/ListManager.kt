@@ -126,15 +126,19 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
     /**
      * 获取加载更多的状态信息
      */
-    fun getLoadMoreState(): Status? {
-        return listing?.loadMoreState?.value?.status
+    fun getLoadMoreState(block: (state: Status?) -> Unit) {
+        listing?.loadMoreState?.observe(builder.lifecycleOwner, Observer {
+            block.invoke(it?.status)
+        })
     }
 
     /**
      * 获取下拉刷新的状态信息
      */
-    fun getRefreshState(): Status? {
-        return listing?.refreshState?.value?.status
+    fun getRefreshState(block: (state: Status?) -> Unit) {
+        listing?.refreshState?.observe(builder.lifecycleOwner, Observer {
+            block.invoke(it?.status)
+        })
     }
 
     class Builder {

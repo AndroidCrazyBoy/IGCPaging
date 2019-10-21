@@ -13,8 +13,6 @@ enum class Status {
     IDEAL,
     COMPLETE,
     COMPLETE_WITHOUT_HOLD
-
-
 }
 
 @Keep
