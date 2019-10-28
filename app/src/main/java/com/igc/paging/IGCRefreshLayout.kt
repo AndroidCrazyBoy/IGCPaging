@@ -1,7 +1,8 @@
-package com.igc.list
+package com.igc.paging
 
 import android.content.Context
 import android.util.AttributeSet
+import com.igc.list.IRefreshLayout
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import com.scwang.smartrefresh.layout.api.RefreshLayout
 import com.scwang.smartrefresh.layout.header.ClassicsHeader

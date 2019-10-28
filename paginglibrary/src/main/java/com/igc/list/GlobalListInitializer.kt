@@ -17,7 +17,7 @@ class GlobalListInitializer {
     /**
      * 上拉加载和下拉刷新占位item
      */
-    private var holderLayout: IListHolderLayout? = null
+    private var holderLayout: ILoadMoreHolderLayout? = null
 
     /**
      * 分页配置
@@ -27,7 +27,7 @@ class GlobalListInitializer {
     /**
      * 设置全局上拉加载和下拉刷新样式
      */
-    fun setListHolderLayout(layout: IListHolderLayout): GlobalListInitializer {
+    fun setListHolderLayout(layout: ILoadMoreHolderLayout): GlobalListInitializer {
         this.holderLayout = layout
         return instance
     }
@@ -43,7 +43,7 @@ class GlobalListInitializer {
     /**
      * 获取上拉加载和下拉刷新样式Holder
      */
-    fun getListHolderLayout(context: Context): IListHolderLayout {
+    fun getListHolderLayout(context: Context): ILoadMoreHolderLayout {
         return holderLayout ?: DefaultHolderLayout(context)
     }
 

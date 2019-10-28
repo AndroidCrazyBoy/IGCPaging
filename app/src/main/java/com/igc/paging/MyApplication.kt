@@ -1,6 +1,8 @@
-package com.igc.list
+package com.igc.paging
 
 import android.app.Application
+import com.igc.list.BuildConfig
+import com.igc.list.GlobalListInitializer
 import com.igc.list.paging.PageList
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger

@@ -1,9 +1,10 @@
-package com.igc.list
+package com.igc.paging
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.igc.list.R
 import kotlinx.android.synthetic.main.test_item.view.*
 import me.drakeet.multitype.ItemViewBinder
 

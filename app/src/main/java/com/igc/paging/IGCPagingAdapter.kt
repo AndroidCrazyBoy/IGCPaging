@@ -1,6 +1,7 @@
-package com.igc.list
+package com.igc.paging
 
 import android.support.v7.util.DiffUtil
+import com.igc.list.IPagingAdapter
 import com.igc.list.paging.PageList
 import me.drakeet.multitype.MultiTypeAdapter
 

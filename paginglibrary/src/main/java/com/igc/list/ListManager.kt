@@ -27,9 +27,9 @@ class ListManager(private val builder: Builder) : ViewModel(),
             throw NullPointerException("ListManager adapter or recyclerView must not be null")
         }
         builder.recyclerView!!.layoutManager = builder.layoutManager
-                ?: LinearLayoutManager(builder.context)
+            ?: LinearLayoutManager(builder.context)
         builder.recyclerView!!.adapter =
-                if (builder.enableLoadMore) PagingAdapterWrapper(builder.adapter!!) else (builder.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
+            if (builder.enableLoadMore) PagingAdapterWrapper(builder.adapter!!) else (builder.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
         // 上拉加载
         if (builder.enableLoadMore) {
             val adapter = builder.recyclerView!!.adapter as PagingAdapterWrapper
@@ -102,7 +102,7 @@ class ListManager(private val builder: Builder) : ViewModel(),
     }
 
     fun changePageList(block: (old: PageList<Any>?) -> PageList<Any>?) {
-        listing?.pagedList?.value = block.invoke(listing?.pagedList?.value)
+        listing?.pagedList?.value = block.invoke(listing?.pagedList?.value?.copyPageList())
     }
 
     override fun onRefresh(refreshLayout: IRefreshLayout) {
@@ -169,7 +169,7 @@ class ListManager(private val builder: Builder) : ViewModel(),
         /**
          * 加载更多和下拉刷新样式
          */
-        internal var layoutHolder: IListHolderLayout? = null
+        internal var layoutHolder: ILoadMoreHolderLayout? = null
 
         internal lateinit var lifecycleOwner: LifecycleOwner
 
@@ -188,7 +188,7 @@ class ListManager(private val builder: Builder) : ViewModel(),
             return this
         }
 
-        fun setCustomLayout(layout: IListHolderLayout): Builder {
+        fun setLoadMoreHolderLayout(layout: ILoadMoreHolderLayout): Builder {
             this.layoutHolder = layout
             return this
         }

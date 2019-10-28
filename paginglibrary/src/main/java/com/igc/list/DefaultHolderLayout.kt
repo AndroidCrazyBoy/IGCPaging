@@ -10,7 +10,7 @@ import android.view.View
  * @author baolongxiang
  * @createTime 2019-08-05
  */
-open class DefaultHolderLayout(val appContext: Context) : IListHolderLayout {
+open class DefaultHolderLayout(val appContext: Context) : ILoadMoreHolderLayout {
 
     @SuppressLint("InflateParams")
     override fun getLoadMoreLayout(): View {

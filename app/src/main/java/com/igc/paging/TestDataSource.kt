@@ -1,4 +1,4 @@
-package com.igc.list
+package com.igc.paging
 
 import android.os.Handler
 import com.igc.list.paging.PageKeyDataSource
