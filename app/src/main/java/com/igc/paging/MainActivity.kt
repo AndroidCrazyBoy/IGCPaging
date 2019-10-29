@@ -32,9 +32,6 @@ class MainActivity : AppCompatActivity() {
 
         test.setOnClickListener {
             listManager.changePageList {
-                it?.forEach {
-                    Logger.d("TEST")
-                }
                 it?.removeAt2(0)
                 it
 //                return@changePageList it

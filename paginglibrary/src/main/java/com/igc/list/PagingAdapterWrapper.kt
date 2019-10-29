@@ -53,8 +53,8 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
             (holder as AppendViewHolder).bind(loadMoreState, loadMoreView, loadFinishView)
         } else {
             adapter.onBindViewHolder(holder, position, Collections.emptyList())
-            notifyUtil.itemLoadPosition(position)
         }
+        notifyUtil.itemLoadPosition(position)
     }
 
     override fun getItemCount(): Int {
@@ -173,12 +173,12 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
             Logger.d("TEST ----> AppendViewHolder state =" + state)
 
             when (state) {
-                NetworkState.IDEAL,
                 NetworkState.LOADED,
                 NetworkState.COMPLETE_WITHOUT_TEXT -> {
                     loadMoreView?.visibility = View.GONE
                     loadFinishView?.visibility = View.GONE
                 }
+                NetworkState.IDEAL,
                 NetworkState.LOADING -> {
                     loadMoreView?.visibility = View.VISIBLE
                     loadFinishView?.visibility = View.GONE

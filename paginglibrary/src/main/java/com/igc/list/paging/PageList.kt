@@ -104,7 +104,7 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
     }
 
     fun loadAround(index: Int) {
-        if (index < 0 || index >= size) {
+        if (index < 0 || index > size) {
             throw IndexOutOfBoundsException("Paging Index: $index, Size: $size")
         }
         loadAroundInternal(index)
