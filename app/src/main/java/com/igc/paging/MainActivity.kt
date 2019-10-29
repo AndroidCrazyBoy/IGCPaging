@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
 
         test.setOnClickListener {
             listManager.changePageList {
-                it?.removeAt(0)
+                it?.removeAt2(0)
                 it
 //                return@changePageList it
             }
