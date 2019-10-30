@@ -188,7 +188,7 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
                     loadFinishView?.visibility = View.VISIBLE
                 }
                 else -> {
-                    loadMoreView?.visibility = View.GONE
+                    loadMoreView?.visibility = View.VISIBLE
                     loadFinishView?.visibility = View.GONE
                 }
             }

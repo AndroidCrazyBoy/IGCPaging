@@ -3,6 +3,9 @@ package com.igc.list
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.igc.list.paging.Status
+import com.igc.paging.EmptyBean
+import com.igc.paging.TestBean
+import com.igc.paging.TestViewBinder
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -40,7 +43,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun buildAdapter(): IGCPagingAdapter {
         return IGCPagingAdapter().apply {
-            register(String::class.java, TestViewBinder())
+            register(TestBean::class.java, TestViewBinder())
+            register(EmptyBean::class.java, EmptyViewBinder())
         }
     }
 }
