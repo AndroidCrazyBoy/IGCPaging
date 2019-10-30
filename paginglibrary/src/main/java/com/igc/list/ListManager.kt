@@ -102,7 +102,7 @@ class ListManager(private val builder: Builder) : ViewModel(),
     }
 
     fun changePageList(block: (old: PageList<Any>?) -> PageList<Any>?) {
-        listing?.pagedList?.value = block.invoke(listing?.pagedList?.value?.copyPageList())
+        listing?.pagedList?.value = block.invoke(listing?.pagedList?.value)
     }
 
     override fun onRefresh(refreshLayout: IRefreshLayout) {

@@ -50,12 +50,8 @@ class NotifyUtil(val adapter: IPagingAdapter) {
 
     fun <T> submitList(pageList: PageList<T>) {
         this.pageList = pageList
-        try {
-            notifyCallback.onDataChange(this.adapter.itemData, pageList)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
         this.adapter.itemData = pageList
+        this.adapter.notifyDataSetChanged()
         pageList.addNotifyCallback(notifyCallback)
     }
 
