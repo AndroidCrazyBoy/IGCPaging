@@ -18,7 +18,7 @@ import com.orhanobut.logger.Logger
  */
 @Suppress("UNCHECKED_CAST")
 class ListManager(private val builder: Builder) : ViewModel(),
-    IRefreshLayout.PullRefreshListener {
+        IRefreshLayout.PullRefreshListener {
 
     private var listing: Listing<Any>? = null
 
@@ -207,7 +207,7 @@ class ListManager(private val builder: Builder) : ViewModel(),
         fun build(activity: FragmentActivity): ListManager {
             this.lifecycleOwner = activity
             this.context = activity
-            this.layoutHolder = GlobalListInitializer.instance.getListHolderLayout(context!!)
+            this.layoutHolder = if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context!!) else layoutHolder
             return ViewModelProviders.of(activity, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     return ListManager(this@Builder) as T
