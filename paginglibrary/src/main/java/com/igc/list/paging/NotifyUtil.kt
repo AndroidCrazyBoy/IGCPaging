@@ -48,18 +48,19 @@ class NotifyUtil(val adapter: IPagingAdapter) {
         return pageList?.size ?: 0
     }
 
-    fun <T> submitList(pageList: PageList<T>) {
+    fun <T> submitList(pageList: PageList<T>, oldPageList: PageList<*>?) {
         this.pageList = pageList
         this.adapter.itemData = pageList
-        this.adapter.notifyDataSetChanged()
         pageList.addNotifyCallback(notifyCallback)
+        oldPageList?.let {
+            notifyCallback.onDataChange(it, pageList)
+        }
     }
 
     fun itemLoadPosition(position: Int) {
-        if (!enableLoadMore) {
-            return
+        if (enableLoadMore) {
+            pageList?.loadAround(position)
         }
-        pageList?.loadAround(position)
     }
 
     fun enableLoadMore(enableLoadMore: Boolean) {

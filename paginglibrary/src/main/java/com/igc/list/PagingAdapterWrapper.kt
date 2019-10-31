@@ -23,21 +23,35 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
         private const val TYPE_APPEND = 1001
     }
 
+    /**
+     * 刷新辅助类
+     */
     private val notifyUtil by lazy { NotifyUtil(adapter) }
+
     /**
      * 上拉加载状态（依据此状态显示与隐藏加载更多的item）
      */
     private var loadMoreState: NetworkState = NetworkState.IDEAL
+
     /**
      * 加载更多itemView
      */
     private var loadMoreView: View? = null
+
     /**
      * 加载完成itemView
      */
     private var loadFinishView: View? = null
 
+    /**
+     * 是否可以进行上拉加载
+     */
     private var enableLoadMore: Boolean = true
+
+    /**
+     * 记录旧数据配合diffUtil进行数据刷新
+     */
+    var oldItemDatas: PageList<*>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == TYPE_APPEND) {
@@ -62,7 +76,7 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
     }
 
     fun <T> submitList(pageList: PageList<T>) {
-        notifyUtil.submitList(pageList)
+        notifyUtil.submitList(pageList, oldItemDatas)
     }
 
     fun setLoadedState(state: NetworkState) {

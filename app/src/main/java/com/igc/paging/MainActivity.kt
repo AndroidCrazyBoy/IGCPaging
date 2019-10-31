@@ -3,12 +3,11 @@ package com.igc.paging
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import com.igc.list.*
+import com.igc.list.EmptyViewBinder
+import com.igc.list.ListManager
+import com.igc.list.R
+import com.igc.list.TestRepository
 import com.igc.list.paging.Status
-import com.igc.paging.EmptyBean
-import com.igc.paging.TestBean
-import com.igc.paging.TestViewBinder
-import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -20,11 +19,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val listManager = ListManager.Builder()
-            .setAdapter(buildAdapter())
-            .setLayoutManager(LinearLayoutManager(this))
-            .bindPageList(repository.getTestData("TEST PAGING"))
-            .into(recyclerView, refreshLayout)
-            .build(this)
+                .setAdapter(buildAdapter())
+                .setLayoutManager(LinearLayoutManager(this))
+                .bindPageList(repository.getTestData("TEST PAGING"))
+                .into(recyclerView, refreshLayout)
+                .build(this)
 
 
         listManager.getRefreshState { state ->

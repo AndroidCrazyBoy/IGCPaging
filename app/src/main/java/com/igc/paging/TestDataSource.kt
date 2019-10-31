@@ -2,9 +2,6 @@ package com.igc.paging
 
 import android.os.Handler
 import com.igc.list.paging.PageKeyDataSource
-import com.igc.paging.BaseBean
-import com.igc.paging.EmptyBean
-import com.igc.paging.TestBean
 
 /**
  * @author baolongxiang

@@ -27,13 +27,12 @@ class ListManager(private val builder: Builder) : ViewModel(),
             throw NullPointerException("ListManager adapter or recyclerView must not be null")
         }
         builder.recyclerView!!.layoutManager = builder.layoutManager
-            ?: LinearLayoutManager(builder.context)
-        builder.recyclerView!!.adapter =
-            if (builder.enableLoadMore) PagingAdapterWrapper(builder.adapter!!) else (builder.adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
+                ?: LinearLayoutManager(builder.context)
+        builder.recyclerView!!.adapter = PagingAdapterWrapper(builder.adapter!!)
         // 上拉加载
+        val adapter = builder.recyclerView!!.adapter as PagingAdapterWrapper
+        adapter.enableLoadMore(builder.enableLoadMore)
         if (builder.enableLoadMore) {
-            val adapter = builder.recyclerView!!.adapter as PagingAdapterWrapper
-            adapter.enableLoadMore(builder.enableLoadMore)
             adapter.setLoadMoreView(builder.layoutHolder?.getLoadMoreLayout())
             adapter.setLoadFinishView(builder.layoutHolder?.getLoadFinishLayout())
         }
@@ -102,6 +101,10 @@ class ListManager(private val builder: Builder) : ViewModel(),
     }
 
     fun changePageList(block: (old: PageList<Any>?) -> PageList<Any>?) {
+        // 记录旧数据配合diffUtil进行数据刷新
+        if (builder.recyclerView?.adapter is PagingAdapterWrapper) {
+            (builder.recyclerView?.adapter as PagingAdapterWrapper).oldItemDatas = listing?.pagedList?.value?.copyPageList()
+        }
         listing?.pagedList?.value = block.invoke(listing?.pagedList?.value)
     }
 
