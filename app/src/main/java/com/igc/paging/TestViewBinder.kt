@@ -12,18 +12,18 @@ import me.drakeet.multitype.ItemViewBinder
  * @author baolongxiang
  * @createTime 2019-08-18
  */
-class TestViewBinder : ItemViewBinder<String, TestViewBinder.ViewHolder>() {
+class TestViewBinder : ItemViewBinder<TestBean, TestViewBinder.ViewHolder>() {
     override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): ViewHolder {
         return ViewHolder(inflater.inflate(R.layout.test_item, parent, false))
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, item: String) {
+    override fun onBindViewHolder(holder: ViewHolder, item: TestBean) {
         holder.bind(item)
     }
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(item: String) {
-            view.itemText.setText(item)
+        fun bind(item: TestBean) {
+            view.itemText.setText(item.text)
         }
     }
 }
