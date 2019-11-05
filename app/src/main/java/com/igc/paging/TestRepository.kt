@@ -1,9 +1,8 @@
-package com.igc.list
+package com.igc.paging
 
+import com.igc.list.Listing
 import com.igc.list.paging.DataSource
 import com.igc.list.paging.fetchPaing
-import com.igc.paging.BaseBean
-import com.igc.paging.TestDataSource
 
 /**
  * @author baolongxiang

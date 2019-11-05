@@ -6,7 +6,6 @@ import android.support.v7.widget.LinearLayoutManager
 import com.igc.list.EmptyViewBinder
 import com.igc.list.ListManager
 import com.igc.list.R
-import com.igc.list.TestRepository
 import com.igc.list.paging.Status
 import kotlinx.android.synthetic.main.activity_main.*
 

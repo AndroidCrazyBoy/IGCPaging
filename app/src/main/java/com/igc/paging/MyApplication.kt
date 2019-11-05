@@ -23,7 +23,7 @@ class MyApplication : Application() {
 
     private fun initPagingConfig() {
         GlobalListInitializer.instance
-                .setPagingConfig(PageList.Config(20, 25))
+                .setPagingConfig(PageList.Config(15, 20))
     }
 
     private fun initLogger() {

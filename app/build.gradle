@@ -35,6 +35,7 @@ dependencies {
     implementation deps.kotlin.kotlin_stdlib_jdk7
     implementation deps.kotlin.kotlin_reflect
     implementation deps.logger
+    implementation deps.rx.rxjava2
     implementation deps.glide.runtime
     annotationProcessor deps.glide.compiler
 

@@ -2,6 +2,7 @@ package com.igc.list
 
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -81,15 +82,6 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
 
     fun setLoadedState(state: NetworkState) {
         this.loadMoreState = state
-        when (state) {
-            NetworkState.LOADING -> {
-                notifyUtil.notifyItemInserted(this.itemCount)
-            }
-            NetworkState.LOADED,
-            NetworkState.COMPLETE -> {
-                notifyUtil.notifyItemChanged(this.itemCount - 1)
-            }
-        }
     }
 
     fun setLoadMoreView(loadMoreView: View?) {
@@ -159,7 +151,7 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
 
     private fun setFullSpan(holder: RecyclerView.ViewHolder) {
         val lp: ViewGroup.LayoutParams? = holder.itemView.layoutParams
-        if (lp != null && lp is android.support.v7.widget.StaggeredGridLayoutManager.LayoutParams) {
+        if (lp != null && lp is StaggeredGridLayoutManager.LayoutParams) {
             lp.isFullSpan = true
         }
     }
@@ -169,7 +161,11 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
      */
     private inner class AppendViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(state: NetworkState, loadMoreView: View?, loadFinishView: View?) {
-            val container = view.container
+            if (state == NetworkState.IDEAL) {
+                view.container.visibility = View.GONE
+                return
+            }
+            val container = view.container.apply { visibility = View.VISIBLE }
             loadMoreView?.let {
                 if (it.parent != null) {
                     (it.parent as ViewGroup).removeView(it)
@@ -184,7 +180,7 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
                 container.addView(loadFinishView)
             }
 
-            Logger.d("TEST ----> AppendViewHolder state =" + state)
+            Logger.d("TEST ----> AppendViewHolder state =$state")
 
             when (state) {
                 NetworkState.LOADED,
@@ -192,7 +188,6 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
                     loadMoreView?.visibility = View.GONE
                     loadFinishView?.visibility = View.GONE
                 }
-                NetworkState.IDEAL,
                 NetworkState.LOADING -> {
                     loadMoreView?.visibility = View.VISIBLE
                     loadFinishView?.visibility = View.GONE

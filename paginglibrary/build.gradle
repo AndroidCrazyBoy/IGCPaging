@@ -35,8 +35,9 @@ dependencies {
 
     implementation deps.support.appcompat_v7
     implementation deps.support.recyclerview
-    implementation deps.logger
     implementation deps.lifecycle.extensions
+    implementation deps.rx.rxjava2
+    implementation deps.logger
 }
 
 uploadArchives {
@@ -47,7 +48,7 @@ uploadArchives {
                 authentication(userName: 'igetcool_pub', password: '123456')
             }
             pom.project {
-                version 'beat-1.1.4'
+                version 'beat-1.1.6'
                 artifactId 'auto-paging'
                 groupId 'com.igetcool.paging'
                 packaging 'paging'

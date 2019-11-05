@@ -9,7 +9,7 @@
     <TextView
         android:id="@+id/itemText"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="55dp"
         android:gravity="center"
         android:text="TEST"
         android:textSize="20dp"

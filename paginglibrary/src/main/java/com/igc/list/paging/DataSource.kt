@@ -6,6 +6,7 @@ package com.igc.list.paging
  * @createTime 2019-07-04
  */
 abstract class DataSource<Key, Value> {
+
     /**
      * 分发请求初始化的数据（第一页数据）
      */

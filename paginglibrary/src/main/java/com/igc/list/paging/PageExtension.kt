@@ -30,6 +30,7 @@ fun <Key, Value> DataSource.DataFactory<Key, Value>.fetchPaing(
         loadMoreState = liveData.value?.dataSource?.loadMoreState,
         refreshState = liveData.value?.dataSource?.initialLoad,
         refresh = { liveData.value?.dataSource?.refresh() ?: {} },
-        retry = { liveData.value?.dataSource?.retry() ?: {} }
+        retry = { liveData.value?.dataSource?.retry() ?: {} },
+        destroy = { liveData.value?.dataSource?.destroy() ?: {} }
     )
 }

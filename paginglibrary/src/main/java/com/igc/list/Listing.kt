@@ -33,5 +33,10 @@ data class Listing<T>(
     /**
      * 重试最后一次的网络请求
      */
-    val retry: (() -> Any)
+    val retry: (() -> Any),
+
+    /**
+     * 销毁处理
+     */
+    val destroy: (() -> Any)
 )

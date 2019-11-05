@@ -2,6 +2,8 @@ package com.igc.list.paging
 
 import android.arch.lifecycle.MutableLiveData
 import com.orhanobut.logger.Logger
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import java.util.*
 
 /**
@@ -14,6 +16,8 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
     companion object {
         private const val INIT_PAGE_COUNT = 1
     }
+
+    private val disposableGroup = CompositeDisposable()
 
     val loadMoreState = MutableLiveData<NetworkState>()
 
@@ -71,6 +75,14 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
                 || loadMoreState.value == NetworkState.IDEAL
                 || loadMoreState.value?.status == Status.FAILED)
                 && loadMoreState.value != NetworkState.COMPLETE
+
+    fun Disposable.addDispose() {
+        disposableGroup.add(this)
+    }
+
+    fun destroy() {
+        disposableGroup.dispose()
+    }
 
     abstract fun loadInitial(params: LoadParams, callback: LoadCallback<Value>)
 
