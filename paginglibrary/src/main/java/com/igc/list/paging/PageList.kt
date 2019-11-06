@@ -1,6 +1,10 @@
 package com.igc.list.paging
 
 import android.support.annotation.Keep
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 
 /**
  * 数据存储类
@@ -77,10 +81,28 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
                 this@PageList.loadAroundInternal(index)
             }
         }
-        copyResult.pageStore.addAll(pageStore)
+        copyResult.pageStore.addAll(deepCopy(pageStore))
         copyResult.pageSizeStore.addAll(pageSizeStore)
         copyResult.notifyCallbacks.addAll(notifyCallbacks)
         return copyResult
+    }
+
+    /**
+     * 深度copy
+     */
+    @Suppress("UNCHECKED_CAST")
+    fun deepCopy(src: List<T>): List<T> {
+        try {
+            val byteOut = ByteArrayOutputStream()
+            val outStream = ObjectOutputStream(byteOut)
+            outStream.writeObject(src)
+
+            val byteIn = ByteArrayInputStream(byteOut.toByteArray())
+            val inStream = ObjectInputStream(byteIn)
+            return inStream.readObject() as List<T>
+        } catch (e: Exception) {
+            return src
+        }
     }
 
     fun removeAt2(index: Int): T {

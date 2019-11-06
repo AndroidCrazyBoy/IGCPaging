@@ -19,7 +19,7 @@ import io.reactivex.disposables.CompositeDisposable
  */
 @Suppress("UNCHECKED_CAST")
 class ListManager(private val builder: Builder) : ViewModel(),
-    IRefreshLayout.PullRefreshListener {
+        IRefreshLayout.PullRefreshListener {
 
     private var listing: Listing<Any>? = null
 
@@ -28,7 +28,7 @@ class ListManager(private val builder: Builder) : ViewModel(),
             throw NullPointerException("ListManager adapter or recyclerView must not be null")
         }
         builder.recyclerView!!.layoutManager = builder.layoutManager
-            ?: LinearLayoutManager(builder.context)
+                ?: LinearLayoutManager(builder.context)
         builder.recyclerView!!.adapter = PagingAdapterWrapper(builder.adapter!!)
         // 上拉加载
         val adapter = builder.recyclerView!!.adapter as PagingAdapterWrapper
@@ -104,8 +104,7 @@ class ListManager(private val builder: Builder) : ViewModel(),
     fun changePageList(block: (old: PageList<Any>?) -> PageList<Any>?) {
         // 记录旧数据配合diffUtil进行数据刷新
         if (builder.recyclerView?.adapter is PagingAdapterWrapper) {
-            (builder.recyclerView?.adapter as PagingAdapterWrapper).oldItemDatas =
-                listing?.pagedList?.value?.copyPageList()
+            (builder.recyclerView?.adapter as PagingAdapterWrapper).oldItemDatas = listing?.pagedList?.value?.copyPageList()
         }
         listing?.pagedList?.value = block.invoke(listing?.pagedList?.value)
     }
@@ -219,7 +218,7 @@ class ListManager(private val builder: Builder) : ViewModel(),
             this.lifecycleOwner = activity
             this.context = activity
             this.layoutHolder =
-                if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context!!) else layoutHolder
+                    if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context!!) else layoutHolder
             return ViewModelProviders.of(activity, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     return ListManager(this@Builder) as T

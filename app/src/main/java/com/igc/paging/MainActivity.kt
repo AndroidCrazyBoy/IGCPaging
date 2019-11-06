@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         test.setOnClickListener {
             listManager.changePageList {
                 it?.removeAt2(0)
+//                (it!![0] as TestBean).text = "TTTTTTTT"
                 it
 //                return@changePageList it
             }
