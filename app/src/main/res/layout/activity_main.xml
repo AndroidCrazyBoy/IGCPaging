@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.igc.paging.IGCRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                                 xmlns:tools="http://schemas.android.com/tools"
-                                 android:id="@+id/refreshLayout"
-                                 android:layout_width="match_parent"
-                                 android:layout_height="match_parent"
-                                 tools:context="com.igc.paging.MainActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/refreshLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.igc.paging.MainActivity">
     
-    <FrameLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         
@@ -19,10 +19,25 @@
             app:layout_constraintTop_toTopOf="parent" />
         
         <Button
-            android:id="@+id/test"
-            android:text="Delete"
+            android:id="@+id/testItemDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-    </FrameLayout>
+            android:text="Delete"
+            app:layout_constraintBottom_toTopOf="@id/testItemNotify"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+        
+        <Button
+            android:id="@+id/testItemNotify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NotifyItem"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/testItemDelete" />
+
+    </android.support.constraint.ConstraintLayout>
 </com.igc.paging.IGCRefreshLayout>

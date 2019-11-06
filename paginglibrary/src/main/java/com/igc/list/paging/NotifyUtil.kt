@@ -77,19 +77,19 @@ class NotifyUtil(val adapter: IPagingAdapter) {
     }
 
     private inner class DefaultDiffCallBack(var oldData: List<*>, var newData: List<*>) : DiffUtil.Callback() {
-        override fun areItemsTheSame(oldPosition: Int, newPosition: Int): Boolean {
-            adapter.getDiffCallback()?.let {
-                return it.areItemsTheSame(oldData[oldPosition], newData[newPosition])
-            }
-            return oldData[oldPosition] == newData[newPosition]
-        }
-
         override fun getOldListSize(): Int {
             return oldData.size
         }
 
         override fun getNewListSize(): Int {
             return newData.size
+        }
+
+        override fun areItemsTheSame(oldPosition: Int, newPosition: Int): Boolean {
+            adapter.getDiffCallback()?.let {
+                return it.areItemsTheSame(oldData[oldPosition], newData[newPosition])
+            }
+            return oldData[oldPosition] == newData[newPosition]
         }
 
         override fun areContentsTheSame(oldPosition: Int, newPosition: Int): Boolean {

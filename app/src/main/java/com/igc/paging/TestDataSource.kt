@@ -25,7 +25,7 @@ class TestDataSource : PageKeyDataSource<String, BaseBean>() {
     override fun loadAfter(params: LoadParams, callback: LoadCallback<BaseBean>) {
         handler.postDelayed({
             callback.onResult(createTestData(params.key, params.pageSize))
-            if (params.pageIndex > 5) {
+            if (params.pageIndex > 3) {
                 callback.onFinish()
             }
         }, 300)

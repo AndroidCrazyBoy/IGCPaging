@@ -26,13 +26,13 @@ class TestViewBinder : ItemViewBinder<TestBean, TestViewBinder.ViewHolder>() {
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, item)
         } else {
-            holder.view.itemText.text = (payloads[getPosition(holder)] as Bundle).getString("TEST")
+            holder.view.itemText.text = (payloads[0] as Bundle).getString("TEST")
         }
     }
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(item: TestBean) {
-            view.itemText.text = item.text
+            view.itemText.text = if (item.otherText == null) item.text else item.otherText
         }
     }
 }

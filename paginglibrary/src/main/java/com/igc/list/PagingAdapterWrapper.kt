@@ -67,7 +67,16 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
         if (getItemViewType(position) == TYPE_APPEND) {
             (holder as AppendViewHolder).bind(loadMoreState, loadMoreView, loadFinishView)
         } else {
-            adapter.onBindViewHolder(holder, position, Collections.emptyList())
+            adapter.onBindViewHolder(holder, position)
+        }
+        notifyUtil.itemLoadPosition(position)
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (getItemViewType(position) == TYPE_APPEND) {
+            (holder as AppendViewHolder).bind(loadMoreState, loadMoreView, loadFinishView)
+        } else {
+            adapter.onBindViewHolder(holder, position, payloads)
         }
         notifyUtil.itemLoadPosition(position)
     }
@@ -82,6 +91,14 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
 
     fun setLoadedState(state: NetworkState) {
         this.loadMoreState = state
+        when (state) {
+            NetworkState.LOADING,
+            NetworkState.LOADED,
+            NetworkState.COMPLETE,
+            NetworkState.COMPLETE_WITHOUT_TEXT -> {
+                notifyUtil.notifyItemChanged(this.itemCount - 1)
+            }
+        }
     }
 
     fun setLoadMoreView(loadMoreView: View?) {

@@ -33,12 +33,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        test.setOnClickListener {
+        testItemDelete.setOnClickListener {
             listManager.changePageList {
-                //                it?.removeAt2(0)
-                (it!![0] as TestBean).text = "TTTTTTTT"
+                it?.removeAt2(0)
                 it
-//                return@changePageList it
+            }
+        }
+
+        testItemNotify.setOnClickListener {
+            listManager.changePageList {
+                it ?: return@changePageList it
+                (it[0] as TestBean).otherText = "00000000"
+                (it[1] as TestBean).otherText = "11111111"
+                it
             }
         }
 
@@ -55,14 +62,17 @@ class MainActivity : AppCompatActivity() {
 
     private val callback = object : IDiffCallback {
         override fun areItemsTheSame(oldData: Any?, newData: Any?): Boolean {
-            return oldData == newData
+            if (oldData !is TestBean || newData !is TestBean) {
+                return false
+            }
+            return oldData.text == newData.text
         }
 
         override fun areContentsTheSame(oldData: Any?, newData: Any?): Boolean {
             if (oldData !is TestBean || newData !is TestBean) {
                 return false
             }
-            return oldData.text == newData.text
+            return oldData.otherText == newData.otherText
         }
 
         override fun getChangePayload(oldData: Any?, newData: Any?): Any? {
@@ -70,7 +80,7 @@ class MainActivity : AppCompatActivity() {
                 return null
             }
             val bundle = Bundle()
-            bundle.putString("TEST", newData.text)
+            bundle.putString("TEST", newData.otherText)
             return bundle
         }
     }

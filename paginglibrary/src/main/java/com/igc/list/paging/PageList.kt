@@ -43,7 +43,7 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
         pageStore.addAll(data)
         pageSizeStore.clear()
         pageSizeStore.add(data)
-        notifyChange(oldData, pageStore)
+        notifyChange(Collections.emptyList(), pageStore)
     }
 
     fun addData(data: List<T>) {
