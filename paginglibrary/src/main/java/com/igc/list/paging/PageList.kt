@@ -5,6 +5,9 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
+import java.util.*
+import kotlin.collections.AbstractList
+import kotlin.collections.ArrayList
 
 /**
  * 数据存储类
@@ -101,7 +104,7 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
             val inStream = ObjectInputStream(byteIn)
             return inStream.readObject() as List<T>
         } catch (e: Exception) {
-            return src
+            return Collections.emptyList()
         }
     }
 

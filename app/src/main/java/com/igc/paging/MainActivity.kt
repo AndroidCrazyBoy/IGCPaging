@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import com.igc.list.EmptyViewBinder
+import com.igc.list.IDiffCallback
 import com.igc.list.ListManager
 import com.igc.list.R
 import com.igc.list.paging.Status
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         val listManager = ListManager.Builder()
                 .setAdapter(buildAdapter())
                 .setLayoutManager(LinearLayoutManager(this))
+                .enableNotifyAnim(true)
                 .bindPageList(repository.getTestData("TEST PAGING"))
                 .into(recyclerView, refreshLayout)
                 .build(this)
@@ -33,8 +35,8 @@ class MainActivity : AppCompatActivity() {
 
         test.setOnClickListener {
             listManager.changePageList {
-                it?.removeAt2(0)
-//                (it!![0] as TestBean).text = "TTTTTTTT"
+                //                it?.removeAt2(0)
+                (it!![0] as TestBean).text = "TTTTTTTT"
                 it
 //                return@changePageList it
             }
@@ -45,9 +47,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun buildAdapter(): IGCPagingAdapter {
-        return IGCPagingAdapter().apply {
+        return IGCPagingAdapter(callback).apply {
             register(TestBean::class.java, TestViewBinder())
             register(EmptyBean::class.java, EmptyViewBinder())
+        }
+    }
+
+    private val callback = object : IDiffCallback {
+        override fun areItemsTheSame(oldData: Any?, newData: Any?): Boolean {
+            return oldData == newData
+        }
+
+        override fun areContentsTheSame(oldData: Any?, newData: Any?): Boolean {
+            if (oldData !is TestBean || newData !is TestBean) {
+                return false
+            }
+            return oldData.text == newData.text
+        }
+
+        override fun getChangePayload(oldData: Any?, newData: Any?): Any? {
+            if (oldData !is TestBean || newData !is TestBean) {
+                return null
+            }
+            val bundle = Bundle()
+            bundle.putString("TEST", newData.text)
+            return bundle
         }
     }
 }

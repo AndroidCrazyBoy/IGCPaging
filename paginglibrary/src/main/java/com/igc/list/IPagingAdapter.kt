@@ -43,5 +43,5 @@ interface IPagingAdapter {
 
     fun notifyItemRangeChanged(positionStart: Int, itemCount: Int)
 
-    fun getDiffCallback(): DiffUtil.Callback?
+    fun getDiffCallback(): IDiffCallback?
 }

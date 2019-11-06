@@ -19,6 +19,7 @@ class EmptyViewBinder : ItemViewBinder<EmptyBean, EmptyViewBinder.ViewHolder>() 
     override fun onBindViewHolder(holder: ViewHolder, item: EmptyBean) {
     }
 
+
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     }
 }

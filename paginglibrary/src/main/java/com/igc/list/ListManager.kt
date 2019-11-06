@@ -4,13 +4,14 @@ import android.arch.lifecycle.*
 import android.content.Context
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
+import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import com.igc.list.paging.NetworkState
 import com.igc.list.paging.PageList
 import com.igc.list.paging.Status
 import com.orhanobut.logger.Logger
-import io.reactivex.disposables.CompositeDisposable
+
 
 /**
  * recyclerView 管理器
@@ -30,6 +31,9 @@ class ListManager(private val builder: Builder) : ViewModel(),
         builder.recyclerView!!.layoutManager = builder.layoutManager
                 ?: LinearLayoutManager(builder.context)
         builder.recyclerView!!.adapter = PagingAdapterWrapper(builder.adapter!!)
+
+        // 是否显示默认刷新动画
+        builder.recyclerView!!.itemAnimator = if (builder.enableNotifyAnim) DefaultItemAnimator() else null
         // 上拉加载
         val adapter = builder.recyclerView!!.adapter as PagingAdapterWrapper
         adapter.enableLoadMore(builder.enableLoadMore)
@@ -172,6 +176,11 @@ class ListManager(private val builder: Builder) : ViewModel(),
         internal var listing: Listing<Any>? = null
 
         /**
+         * 是否显示recyclerview默认刷新动画
+         */
+        internal var enableNotifyAnim: Boolean = true
+
+        /**
          * 是否需要上拉加载
          */
         internal var enableLoadMore: Boolean = true
@@ -195,6 +204,11 @@ class ListManager(private val builder: Builder) : ViewModel(),
 
         fun enableLoadMore(enable: Boolean): Builder {
             this.enableLoadMore = enable
+            return this
+        }
+
+        fun enableNotifyAnim(enable: Boolean): Builder {
+            this.enableNotifyAnim = enable
             return this
         }
 

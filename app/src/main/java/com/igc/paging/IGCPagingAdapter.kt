@@ -1,6 +1,6 @@
 package com.igc.paging
 
-import android.support.v7.util.DiffUtil
+import com.igc.list.IDiffCallback
 import com.igc.list.IPagingAdapter
 import com.igc.list.paging.PageList
 import me.drakeet.multitype.MultiTypeAdapter
@@ -9,7 +9,7 @@ import me.drakeet.multitype.MultiTypeAdapter
  * @author baolongxiang
  * @createTime 2019-09-09
  */
-class IGCPagingAdapter(val callback: DiffUtil.Callback? = null) : MultiTypeAdapter(), IPagingAdapter {
+class IGCPagingAdapter(val callback: IDiffCallback? = null) : MultiTypeAdapter(), IPagingAdapter {
     override var itemData: PageList<*>
         get() : PageList<*> {
             if (items is PageList<*>) {
@@ -22,7 +22,7 @@ class IGCPagingAdapter(val callback: DiffUtil.Callback? = null) : MultiTypeAdapt
             items = value
         }
 
-    override fun getDiffCallback(): DiffUtil.Callback? {
+    override fun getDiffCallback(): IDiffCallback? {
         return callback
     }
 }

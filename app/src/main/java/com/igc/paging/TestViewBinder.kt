@@ -1,5 +1,6 @@
 package com.igc.paging
 
+import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -21,9 +22,17 @@ class TestViewBinder : ItemViewBinder<TestBean, TestViewBinder.ViewHolder>() {
         holder.bind(item)
     }
 
+    override fun onBindViewHolder(holder: ViewHolder, item: TestBean, payloads: MutableList<Any>) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, item)
+        } else {
+            holder.view.itemText.text = (payloads[getPosition(holder)] as Bundle).getString("TEST")
+        }
+    }
+
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(item: TestBean) {
-            view.itemText.setText(item.text)
+            view.itemText.text = item.text
         }
     }
 }
