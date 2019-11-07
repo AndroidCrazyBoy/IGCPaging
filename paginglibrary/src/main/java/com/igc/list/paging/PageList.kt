@@ -38,7 +38,6 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
     }
 
     fun initData(data: List<T>) {
-        val oldData = ArrayList<T>(pageStore)
         pageStore.clear()
         pageStore.addAll(data)
         pageSizeStore.clear()
