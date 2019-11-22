@@ -1,7 +1,9 @@
 package com.igc.list
 
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE
 import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +13,6 @@ import com.igc.list.paging.NotifyUtil
 import com.igc.list.paging.PageList
 import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.item_append.view.*
-import java.util.*
 
 /**
  * 分页加载adapter 包装类
@@ -49,6 +50,8 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
      */
     private var enableLoadMore: Boolean = true
 
+    private var recyclerView: RecyclerView? = null
+
     /**
      * 记录旧数据配合diffUtil进行数据刷新
      */
@@ -62,14 +65,13 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (getItemViewType(position) == TYPE_APPEND) {
             (holder as AppendViewHolder).bind(loadMoreState, loadMoreView, loadFinishView)
         } else {
             adapter.onBindViewHolder(holder, position)
         }
-        notifyUtil.itemLoadPosition(position)
+        loadAround(position)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
@@ -78,7 +80,25 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
         } else {
             adapter.onBindViewHolder(holder, position, payloads)
         }
-        notifyUtil.itemLoadPosition(position)
+        loadAround(position)
+    }
+
+    private fun loadAround(position: Int) {
+        var visiblePosition = when (val layoutManager = recyclerView?.layoutManager) {
+            is LinearLayoutManager,
+            is GridLayoutManager -> {
+                val itemPosition = (layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                if (itemPosition < 0) {
+                    position
+                } else {
+                    itemPosition + 1
+                }
+            }
+            else -> position
+        }
+        // 避免刷新时调用onBindViewHolder触发第二页的加载
+        visiblePosition = if (recyclerView?.scrollState == SCROLL_STATE_IDLE) visiblePosition else position
+        notifyUtil.itemLoadPosition(visiblePosition)
     }
 
     override fun getItemCount(): Int {
@@ -138,6 +158,7 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
         adapter.onAttachedToRecyclerView(recyclerView)
         val layoutManager = recyclerView.layoutManager
         if (layoutManager is GridLayoutManager) {
@@ -159,13 +180,16 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
     }
 
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
-        if (hasExtraRow()) {
+        if (getItemViewType(holder.adapterPosition) == TYPE_APPEND) {
             setFullSpan(holder)
         } else {
             adapter.onViewAttachedToWindow(holder)
         }
     }
 
+    /**
+     * 对StaggeredGridLayoutManager 上拉加载的支持
+     */
     private fun setFullSpan(holder: RecyclerView.ViewHolder) {
         val lp: ViewGroup.LayoutParams? = holder.itemView.layoutParams
         if (lp != null && lp is StaggeredGridLayoutManager.LayoutParams) {

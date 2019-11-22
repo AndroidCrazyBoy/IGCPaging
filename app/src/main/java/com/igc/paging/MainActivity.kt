@@ -43,8 +43,11 @@ class MainActivity : AppCompatActivity() {
         testItemNotify.setOnClickListener {
             listManager.changePageList {
                 it ?: return@changePageList it
-                (it[0] as TestBean).otherText = "00000000"
-                (it[1] as TestBean).otherText = "11111111"
+//                (it[0] as TestBean).otherText = "00000000"
+//                (it[1] as TestBean).otherText = "11111111"
+                it.forEach {
+                    (it as TestBean).otherText = "123123123"
+                }
                 it
             }
         }
