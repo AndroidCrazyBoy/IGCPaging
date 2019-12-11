@@ -37,7 +37,7 @@ class ContiguousPageList<Key, Value>(
     override fun loadAroundInternal(index: Int) {
         // 动态计算预加载距离
         val distance = if (size < Math.min(config.pageSize, config.initPageSize)) config.pageSize - 1 else size - 1
-        Logger.d("TEST --- >loadAroundInternal index =" + index + ", distance=" + distance + ", pageCount = " + pageCount + ", canLoadMore=" + dataSource.canLoadMore())
+        Logger.d("TEST --- >loadAroundInternal index =" + index + ", distance=" + distance + ", pageCount = " + pageCount + ", canLoadMore=" + dataSource.canLoadMore() + ", LoadMore state=" + dataSource.loadMoreState?.value)
         if (index >= distance && dataSource.canLoadMore()) {
             pageKeyDataSource.dispatchLoadAfter(key, config.pageSize, receiver)
         }

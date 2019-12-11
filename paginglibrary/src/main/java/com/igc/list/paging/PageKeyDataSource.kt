@@ -46,7 +46,10 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
             Logger.d("TEST ---->dispatchLoadAfter COMPLETE")
             return
         }
-        pageCount++
+        // 加载错误再次加载不需要增加pageCount
+        if (loadMoreState.value?.status != Status.FAILED) {
+            pageCount++
+        }
         retry = {
             if (loadMoreState.value != NetworkState.LOADING) {
                 loadMoreState.value = NetworkState.LOADING
@@ -103,11 +106,11 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
         }
 
         override fun onError(error: Throwable) {
-            pageCount--
             when (type) {
                 PageResult.INIT -> initialLoad.value = NetworkState.error(error.message)
                 PageResult.APPEND -> loadMoreState.value = NetworkState.error(error.message)
             }
+            Logger.d("TEST ---->LoadCallbackImpl onError =" + error.message)
         }
     }
 

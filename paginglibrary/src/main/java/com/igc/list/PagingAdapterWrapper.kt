@@ -70,8 +70,8 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
             (holder as AppendViewHolder).bind(loadMoreState, loadMoreView, loadFinishView)
         } else {
             adapter.onBindViewHolder(holder, position)
+            loadAround(position)
         }
-        loadAround(position)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
@@ -79,8 +79,8 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
             (holder as AppendViewHolder).bind(loadMoreState, loadMoreView, loadFinishView)
         } else {
             adapter.onBindViewHolder(holder, position, payloads)
+            loadAround(position)
         }
-        loadAround(position)
     }
 
     private fun loadAround(position: Int) {
@@ -110,6 +110,7 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
     }
 
     fun setLoadedState(state: NetworkState) {
+        if (loadMoreState == state) return
         this.loadMoreState = state
         when (state) {
             NetworkState.LOADING,

@@ -107,7 +107,10 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
         }
     }
 
-    fun removeAt2(index: Int): T {
+    fun removeAt2(index: Int): T? {
+        if (pageStore.isEmpty()) {
+            return null
+        }
         return pageStore.removeAt(index)
     }
 
@@ -128,10 +131,9 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
     }
 
     fun loadAround(index: Int) {
-        if (index < 0 || index > size) {
-            throw IndexOutOfBoundsException("Paging Index: $index, Size: $size")
+        if (index in 1 until size) {
+            loadAroundInternal(index)
         }
-        loadAroundInternal(index)
     }
 
     internal abstract fun loadAroundInternal(index: Int)
