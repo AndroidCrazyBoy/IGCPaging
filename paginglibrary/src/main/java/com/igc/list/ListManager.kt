@@ -19,8 +19,7 @@ import com.orhanobut.logger.Logger
  * @createTime 2019-07-01
  */
 @Suppress("UNCHECKED_CAST")
-class ListManager(private val builder: Builder) : ViewModel(),
-    IRefreshLayout.PullRefreshListener {
+class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.PullRefreshListener {
 
     private var listing: Listing<Any>? = null
 
@@ -28,8 +27,7 @@ class ListManager(private val builder: Builder) : ViewModel(),
         if (builder.adapter == null || builder.recyclerView == null) {
             throw NullPointerException("ListManager adapter or recyclerView must not be null")
         }
-        builder.recyclerView!!.layoutManager = builder.layoutManager
-            ?: LinearLayoutManager(builder.context)
+        builder.recyclerView!!.layoutManager = builder.layoutManager ?: LinearLayoutManager(builder.context)
         builder.recyclerView!!.adapter = PagingAdapterWrapper(builder.adapter!!)
 
         // 是否显示默认刷新动画
@@ -121,8 +119,8 @@ class ListManager(private val builder: Builder) : ViewModel(),
      * 重试（记录的是最后一次网络请求）
      */
     fun retry() {
-        if (listing == null) {
-            throw java.lang.NullPointerException("you must be call bindWith() before retry()")
+        checkNotNull(listing) {
+            "you must be call bindWith() before retry()"
         }
         listing!!.retry()
     }
@@ -131,17 +129,35 @@ class ListManager(private val builder: Builder) : ViewModel(),
      * 首屏数据获取（下拉刷新）
      */
     fun refresh() {
-        if (listing == null) {
-            throw java.lang.NullPointerException("ListManager you must be call bindWith() before refresh()")
+        checkNotNull(listing) {
+            "ListManager you must be call bindWith() before refresh()"
         }
         listing!!.refresh()
     }
 
-    /**
-     * 获取加载更多的状态信息
-     */
+    @Deprecated("RENAME")
+    fun getRefreshState(block: (state: NetworkState?) -> Unit) {
+        observeRefreshState(block)
+    }
+    @Deprecated("RENAME")
     fun getLoadMoreState(block: (state: NetworkState?) -> Unit) {
-        listing?.loadMoreState?.observe(builder.lifecycleOwner, Observer {
+        observeLoadMoreState(block)
+    }
+
+    /**
+     * 获取加载更多的状态信息(只监听一次)
+     */
+    fun getRefreshStateOnce(block: (state: NetworkState?) -> Unit) {
+        listing?.loadMoreState?.observeOnce(builder.lifecycleOwner, Observer {
+            block.invoke(it)
+        })
+    }
+
+    /**
+     * 获取下拉刷新的状态信息(只监听一次)
+     */
+    fun getLoadMoreStateOnce(block: (state: NetworkState?) -> Unit) {
+        listing?.loadMoreState?.observeOnce(builder.lifecycleOwner, Observer {
             block.invoke(it)
         })
     }
@@ -149,8 +165,17 @@ class ListManager(private val builder: Builder) : ViewModel(),
     /**
      * 获取下拉刷新的状态信息
      */
-    fun getRefreshState(block: (state: NetworkState?) -> Unit) {
+    fun observeRefreshState(block: (state: NetworkState?) -> Unit) {
         listing?.refreshState?.observe(builder.lifecycleOwner, Observer {
+            block.invoke(it)
+        })
+    }
+
+    /**
+     * 获取加载更多的状态信息
+     */
+    fun observeLoadMoreState(block: (state: NetworkState?) -> Unit) {
+        listing?.loadMoreState?.observe(builder.lifecycleOwner, Observer {
             block.invoke(it)
         })
     }
@@ -165,7 +190,6 @@ class ListManager(private val builder: Builder) : ViewModel(),
 
     override fun onCleared() {
         super.onCleared()
-
         listing?.destroy?.invoke()
     }
 
@@ -239,8 +263,7 @@ class ListManager(private val builder: Builder) : ViewModel(),
         fun build(activity: FragmentActivity): ListManager {
             this.lifecycleOwner = activity
             this.context = activity
-            this.layoutHolder =
-                if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context!!) else layoutHolder
+            this.layoutHolder = if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context!!) else layoutHolder
             return ViewModelProviders.of(activity, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     return ListManager(this@Builder) as T

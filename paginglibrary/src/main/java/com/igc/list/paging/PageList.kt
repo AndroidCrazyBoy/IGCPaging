@@ -130,6 +130,10 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
         pageStore.add(index, element)
     }
 
+    fun clear2() {
+        pageStore.clear()
+    }
+
     fun loadAround(index: Int) {
         if (index in 1 until size) {
             loadAroundInternal(index)

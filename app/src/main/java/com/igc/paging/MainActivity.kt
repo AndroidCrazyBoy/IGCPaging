@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
             .build(this)
 
 
-        listManager.getRefreshState { state ->
+        listManager.observeRefreshState { state ->
             if (state?.status == Status.SUCCESS) {
                 Logger.d("TEST --- SUCCESS")
             }
