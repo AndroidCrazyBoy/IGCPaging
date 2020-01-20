@@ -180,7 +180,10 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         })
     }
 
-    fun netWorkStateChange(change: Boolean) {
+    /**
+     * 网络变化后自动重试
+     */
+    fun onNetWorkChangedDoRetry(change: Boolean) {
         val loadMoreError = listing!!.loadMoreState?.value?.status == Status.FAILED
         val refreshError = listing!!.refreshState?.value?.status == Status.FAILED
         if (change && (loadMoreError || refreshError)) {

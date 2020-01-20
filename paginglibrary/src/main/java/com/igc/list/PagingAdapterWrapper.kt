@@ -201,7 +201,7 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
     /**
      * 加载更多和完成的item ViewHolder
      */
-    private inner class AppendViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    private class AppendViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(state: NetworkState, loadMoreView: View?, loadFinishView: View?) {
             if (state == NetworkState.IDEAL) {
                 view.container.visibility = View.GONE
