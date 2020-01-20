@@ -230,13 +230,13 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
                     loadMoreView?.visibility = View.GONE
                     loadFinishView?.visibility = View.GONE
                 }
-                NetworkState.LOADING -> {
-                    loadMoreView?.visibility = View.VISIBLE
-                    loadFinishView?.visibility = View.GONE
-                }
                 NetworkState.COMPLETE -> {
                     loadMoreView?.visibility = View.GONE
                     loadFinishView?.visibility = View.VISIBLE
+                }
+                NetworkState.LOADING -> {
+                    loadMoreView?.visibility = View.VISIBLE
+                    loadFinishView?.visibility = View.GONE
                 }
                 else -> {
                     loadMoreView?.visibility = View.VISIBLE

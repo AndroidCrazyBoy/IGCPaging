@@ -19,11 +19,11 @@ data class NetworkState private constructor(
     val status: Status,
     val msg: String? = null) {
     companion object {
-        val IDEAL = NetworkState(Status.IDEAL)
-        val LOADING = NetworkState(Status.RUNNING)
-        val LOADED = NetworkState(Status.SUCCESS)
-        val COMPLETE = NetworkState(Status.SUCCESS)
-        val COMPLETE_WITHOUT_TEXT = NetworkState(Status.SUCCESS)
+        val IDEAL = NetworkState(Status.IDEAL, "ideal")
+        val LOADING = NetworkState(Status.RUNNING, "loading")
+        val LOADED = NetworkState(Status.SUCCESS, "Loaded")
+        val COMPLETE = NetworkState(Status.SUCCESS, "complete")
+        val COMPLETE_WITHOUT_TEXT = NetworkState(Status.SUCCESS, "complete without holder text")
         fun error(msg: String?) = NetworkState(Status.FAILED, msg)
     }
 }

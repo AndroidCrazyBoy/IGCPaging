@@ -42,7 +42,7 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
     override fun dispatchLoadAfter(key: Key?, pageSize: Int, receiver: PageResult.Receiver<Value>) {
         Logger.d("TEST ---->dispatchLoadAfter LOADING")
         // 加载完毕不需要进行分发下一页请求
-        if (loadMoreState.value == NetworkState.COMPLETE || initialLoad.value == NetworkState.LOADING) {
+        if (loadMoreState.value == NetworkState.COMPLETE || loadMoreState.value == NetworkState.COMPLETE_WITHOUT_TEXT || initialLoad.value == NetworkState.LOADING) {
             Logger.d("TEST ---->dispatchLoadAfter COMPLETE")
             return
         }
@@ -74,6 +74,7 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
                 || loadMoreState.value == NetworkState.IDEAL
                 || loadMoreState.value?.status == Status.FAILED)
                 && loadMoreState.value != NetworkState.COMPLETE
+                && loadMoreState.value != NetworkState.COMPLETE_WITHOUT_TEXT
 
     abstract fun loadInitial(params: LoadParams, callback: LoadCallback<Value>)
 
@@ -106,11 +107,11 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
         }
 
         override fun onError(error: Throwable) {
+            Logger.d("TEST ---->LoadCallbackImpl onError =" + error.message)
             when (type) {
                 PageResult.INIT -> initialLoad.value = NetworkState.error(error.message)
                 PageResult.APPEND -> loadMoreState.value = NetworkState.error(error.message)
             }
-            Logger.d("TEST ---->LoadCallbackImpl onError =" + error.message)
         }
     }
 
