@@ -95,7 +95,6 @@ class ListManager(private val builder: Builder) : ViewModel(),
             it ?: return@Observer
             when (it.status) {
                 Status.SUCCESS,
-                Status.COMPLETE,
                 Status.FAILED -> {
                     builder.refreshLayout?.finishPullRefresh()
                 }
@@ -259,5 +258,14 @@ class ListManager(private val builder: Builder) : ViewModel(),
                 }
             })[ListManager::class.java]
         }
+    }
+
+    fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
+        observe(lifecycleOwner, object : Observer<T> {
+            override fun onChanged(t: T?) {
+                observer.onChanged(t)
+                removeObserver(this)
+            }
+        })
     }
 }

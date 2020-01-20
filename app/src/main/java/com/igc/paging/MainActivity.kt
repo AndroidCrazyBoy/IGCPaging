@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import com.igc.list.*
 import com.igc.list.paging.Status
+import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.activity_main.*
 
 @Suppress("UNCHECKED_CAST")
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity() {
 
         listManager.getRefreshState { state ->
             if (state?.status == Status.SUCCESS) {
-
+                Logger.d("TEST --- SUCCESS")
             }
         }
 

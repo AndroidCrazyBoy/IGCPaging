@@ -7,12 +7,10 @@ import android.support.annotation.Keep
  * @createTime 2019-07-07
  */
 enum class Status {
+    IDEAL,
     RUNNING,
     SUCCESS,
-    FAILED,
-    IDEAL,
-    COMPLETE,
-    COMPLETE_WITHOUT_HOLD
+    FAILED
 }
 
 @Keep
@@ -21,11 +19,11 @@ data class NetworkState private constructor(
     val status: Status,
     val msg: String? = null) {
     companion object {
-        val LOADED = NetworkState(Status.SUCCESS)
-        val LOADING = NetworkState(Status.RUNNING)
-        val COMPLETE = NetworkState(Status.COMPLETE)
         val IDEAL = NetworkState(Status.IDEAL)
-        val COMPLETE_WITHOUT_TEXT = NetworkState(Status.COMPLETE_WITHOUT_HOLD)
+        val LOADING = NetworkState(Status.RUNNING)
+        val LOADED = NetworkState(Status.SUCCESS)
+        val COMPLETE = NetworkState(Status.SUCCESS)
+        val COMPLETE_WITHOUT_TEXT = NetworkState(Status.SUCCESS)
         fun error(msg: String?) = NetworkState(Status.FAILED, msg)
     }
 }
