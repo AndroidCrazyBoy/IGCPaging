@@ -3,13 +3,11 @@ package com.igc.paging
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import com.igc.list.EmptyViewBinder
-import com.igc.list.IDiffCallback
-import com.igc.list.ListManager
-import com.igc.list.R
+import com.igc.list.*
 import com.igc.list.paging.Status
 import kotlinx.android.synthetic.main.activity_main.*
 
+@Suppress("UNCHECKED_CAST")
 class MainActivity : AppCompatActivity() {
 
     private val repository: TestRepository by lazy { TestRepository() }
@@ -19,17 +17,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val listManager = ListManager.Builder()
-                .setAdapter(buildAdapter())
-                .setLayoutManager(LinearLayoutManager(this))
-                .enableNotifyAnim(true)
-                .bindPageList(repository.getTestData("TEST PAGING"))
-                .into(recyclerView, refreshLayout)
-                .build(this)
+            .setAdapter(buildAdapter())
+            .setLayoutManager(LinearLayoutManager(this))
+            .enableNotifyAnim(true)
+            .bindPageList(repository.getTestData("TEST PAGING"))
+            .into(recyclerView, refreshLayout)
+            .build(this)
 
 
         listManager.getRefreshState { state ->
-            if (state?.status == Status.FAILED) {
-                // fail
+            if (state?.status == Status.SUCCESS) {
+
             }
         }
 
@@ -41,15 +39,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         testItemNotify.setOnClickListener {
-            listManager.changePageList {
-                it ?: return@changePageList it
-//                (it[0] as TestBean).otherText = "00000000"
-//                (it[1] as TestBean).otherText = "11111111"
-                it.forEach {
-                    (it as TestBean).otherText = "123123123"
-                }
-                it
-            }
+            //            listManager.changePageList {
+//                it ?: return@changePageList it
+////                (it[0] as TestBean).otherText = "00000000"
+////                (it[1] as TestBean).otherText = "11111111"
+//                it.forEach {
+//                    (it as TestBean).otherText = "123123123"
+//                }
+//                it
+//            }
+
+            listManager.bindPageList(repository.getTestData("REBIND PAGING") as Listing<Any>)
         }
 
 //         listManager.bindPageList(repository.getTestData("TEST PAGING"))

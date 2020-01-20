@@ -84,25 +84,25 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
     inner class LoadCallbackImpl<Value>(val type: Int, val receiver: PageResult.Receiver<Value>) : LoadCallback<Value> {
         override fun onFinish() {
             Logger.d("TEST ---->LoadCallbackImpl onFinish")
+            receiver.onPageResult(PageResult.FINISHED, PageResult(Collections.emptyList()))
             initialLoad.value = NetworkState.COMPLETE
             loadMoreState.value = NetworkState.COMPLETE
-            receiver.onPageResult(PageResult.FINISHED, PageResult(Collections.emptyList()))
         }
 
         override fun onFinishWithoutNoMoreData() {
             Logger.d("TEST ---->LoadCallbackImpl onFinishWithoutNoMoreData")
+            receiver.onPageResult(PageResult.FINISHED, PageResult(Collections.emptyList()))
             initialLoad.value = NetworkState.COMPLETE
             loadMoreState.value = NetworkState.COMPLETE_WITHOUT_TEXT
-            receiver.onPageResult(PageResult.FINISHED, PageResult(Collections.emptyList()))
         }
 
         override fun onResult(data: List<Value>) {
+            Logger.d("TEST ---->LoadCallbackImpl LOADED size = " + data.size)
+            receiver.onPageResult(type, PageResult(data))
             when (type) {
                 PageResult.INIT -> initialLoad.value = NetworkState.LOADED
                 PageResult.APPEND -> loadMoreState.value = NetworkState.LOADED
             }
-            Logger.d("TEST ---->LoadCallbackImpl LOADED size = " + data.size)
-            receiver.onPageResult(type, PageResult(data))
         }
 
         override fun onError(error: Throwable) {
