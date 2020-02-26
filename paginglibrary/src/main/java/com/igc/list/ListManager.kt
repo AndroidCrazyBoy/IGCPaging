@@ -27,7 +27,8 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         if (builder.adapter == null || builder.recyclerView == null) {
             throw NullPointerException("ListManager adapter or recyclerView must not be null")
         }
-        builder.recyclerView!!.layoutManager = builder.layoutManager ?: LinearLayoutManager(builder.context)
+        builder.recyclerView!!.layoutManager = builder.layoutManager
+                ?: LinearLayoutManager(builder.context)
         builder.recyclerView!!.adapter = PagingAdapterWrapper(builder.adapter!!)
 
         // 是否显示默认刷新动画
@@ -106,7 +107,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         // 记录旧数据配合diffUtil进行数据刷新
         if (builder.recyclerView?.adapter is PagingAdapterWrapper) {
             (builder.recyclerView?.adapter as PagingAdapterWrapper).oldItemDatas =
-                listing?.pagedList?.value?.copyPageList()
+                    listing?.pagedList?.value?.copyPageList()
         }
         listing?.pagedList?.value = block.invoke(listing?.pagedList?.value)
     }
@@ -135,29 +136,30 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         listing!!.refresh()
     }
 
-    @Deprecated("RENAME")
+    @Deprecated("rename", ReplaceWith("observeRefreshState(block)"))
     fun getRefreshState(block: (state: NetworkState?) -> Unit) {
         observeRefreshState(block)
     }
-    @Deprecated("RENAME")
+
+    @Deprecated("rename", ReplaceWith("observeLoadMoreState(block)"))
     fun getLoadMoreState(block: (state: NetworkState?) -> Unit) {
         observeLoadMoreState(block)
     }
 
     /**
-     * 获取加载更多的状态信息(只监听一次)
+     * 获取加载更多的状态信息(监听到一次结果（success or fail）后停止监听)
      */
-    fun getRefreshStateOnce(block: (state: NetworkState?) -> Unit) {
-        listing?.loadMoreState?.observeOnce(builder.lifecycleOwner, Observer {
+    fun getRefreshResultStateOnce(block: (state: NetworkState?) -> Unit) {
+        listing?.loadMoreState?.observeResultOnce(builder.lifecycleOwner, Observer {
             block.invoke(it)
         })
     }
 
     /**
-     * 获取下拉刷新的状态信息(只监听一次)
+     * 获取下拉刷新的状态信息(监听到一次结果（success or fail）后停止监听)
      */
-    fun getLoadMoreStateOnce(block: (state: NetworkState?) -> Unit) {
-        listing?.loadMoreState?.observeOnce(builder.lifecycleOwner, Observer {
+    fun getLoadMoreResultStateOnce(block: (state: NetworkState?) -> Unit) {
+        listing?.loadMoreState?.observeResultOnce(builder.lifecycleOwner, Observer {
             block.invoke(it)
         })
     }
@@ -286,11 +288,16 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         }
     }
 
-    fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
-        observe(lifecycleOwner, object : Observer<T> {
-            override fun onChanged(t: T?) {
-                observer.onChanged(t)
-                removeObserver(this)
+    /**
+     * 只监听结果状态(监听到一次结果（success or fail）后停止监听)
+     */
+    private fun LiveData<NetworkState>.observeResultOnce(lifecycleOwner: LifecycleOwner, observer: Observer<NetworkState>) {
+        observe(lifecycleOwner, object : Observer<NetworkState> {
+            override fun onChanged(state: NetworkState?) {
+                observer.onChanged(state)
+                if (state?.status == Status.SUCCESS || state?.status == Status.FAILED) {
+                    removeObserver(this)
+                }
             }
         })
     }

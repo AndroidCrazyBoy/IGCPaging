@@ -21,8 +21,8 @@ data class NetworkState private constructor(
     companion object {
         val IDEAL = NetworkState(Status.IDEAL, "ideal")
         val LOADING = NetworkState(Status.RUNNING, "loading")
-        val LOADED = NetworkState(Status.SUCCESS, "Loaded")
-        val COMPLETE = NetworkState(Status.SUCCESS, "complete")
+        val LOADED = NetworkState(Status.SUCCESS, "loaded")
+        val COMPLETE = NetworkState(Status.SUCCESS, "completed")
         val COMPLETE_WITHOUT_TEXT = NetworkState(Status.SUCCESS, "complete without holder text")
         fun error(msg: String?) = NetworkState(Status.FAILED, msg)
     }

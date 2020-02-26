@@ -8,6 +8,7 @@ import com.igc.list.paging.Status
 import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.activity_main.*
 
+
 @Suppress("UNCHECKED_CAST")
 class MainActivity : AppCompatActivity() {
 
