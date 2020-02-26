@@ -222,7 +222,7 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
                 container.addView(loadFinishView)
             }
 
-            Logger.d("TEST ----> AppendViewHolder state =$state")
+            Logger.d("Paging ----> AppendViewHolder state =$state")
 
             when (state) {
                 NetworkState.LOADED,

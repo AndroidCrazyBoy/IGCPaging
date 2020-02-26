@@ -26,7 +26,7 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
     private var pageCount = INIT_PAGE_COUNT
 
     override fun dispatchLoadInitial(key: Key?, pageSize: Int, receiver: PageResult.Receiver<Value>) {
-        Logger.d("TEST ---->dispatchLoadInitial LOADING")
+        Logger.d("Paging ---->dispatchLoadInitial LOADING")
         refresh = {
             if (initialLoad.value != NetworkState.LOADING) {
                 pageCount = INIT_PAGE_COUNT
@@ -40,10 +40,10 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
     }
 
     override fun dispatchLoadAfter(key: Key?, pageSize: Int, receiver: PageResult.Receiver<Value>) {
-        Logger.d("TEST ---->dispatchLoadAfter LOADING")
+        Logger.d("Paging ---->dispatchLoadAfter LOADING")
         // 加载完毕不需要进行分发下一页请求
         if (loadMoreState.value == NetworkState.COMPLETE || loadMoreState.value == NetworkState.COMPLETE_WITHOUT_TEXT || initialLoad.value == NetworkState.LOADING) {
-            Logger.d("TEST ---->dispatchLoadAfter COMPLETE")
+            Logger.d("Paging ---->dispatchLoadAfter COMPLETE")
             return
         }
         // 加载错误再次加载不需要增加pageCount
@@ -84,21 +84,21 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
 
     inner class LoadCallbackImpl<Value>(val type: Int, val receiver: PageResult.Receiver<Value>) : LoadCallback<Value> {
         override fun onFinish() {
-            Logger.d("TEST ---->LoadCallbackImpl onFinish")
+            Logger.d("Paging ---->LoadCallbackImpl onFinish")
             receiver.onPageResult(PageResult.FINISHED, PageResult(Collections.emptyList()))
             initialLoad.value = NetworkState.COMPLETE
             loadMoreState.value = NetworkState.COMPLETE
         }
 
         override fun onFinishWithoutNoMoreData() {
-            Logger.d("TEST ---->LoadCallbackImpl onFinishWithoutNoMoreData")
+            Logger.d("Paging ---->LoadCallbackImpl onFinishWithoutNoMoreData")
             receiver.onPageResult(PageResult.FINISHED, PageResult(Collections.emptyList()))
             initialLoad.value = NetworkState.COMPLETE
             loadMoreState.value = NetworkState.COMPLETE_WITHOUT_TEXT
         }
 
         override fun onResult(data: List<Value>) {
-            Logger.d("TEST ---->LoadCallbackImpl LOADED size = " + data.size)
+            Logger.d("Paging ---->LoadCallbackImpl LOADED size = " + data.size)
             receiver.onPageResult(type, PageResult(data))
             when (type) {
                 PageResult.INIT -> initialLoad.value = NetworkState.LOADED
@@ -107,7 +107,7 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
         }
 
         override fun onError(error: Throwable) {
-            Logger.d("TEST ---->LoadCallbackImpl onError =" + error.message)
+            Logger.d("Paging ---->LoadCallbackImpl onError =" + error.message)
             when (type) {
                 PageResult.INIT -> initialLoad.value = NetworkState.error(error.message)
                 PageResult.APPEND -> loadMoreState.value = NetworkState.error(error.message)
