@@ -150,7 +150,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
      * 获取加载更多的状态信息(监听到一次结果（success or fail）后停止监听)
      */
     fun getRefreshResultStateOnce(block: (state: NetworkState?) -> Unit) {
-        listing?.loadMoreState?.observeResultOnce(builder.lifecycleOwner, Observer {
+        listing?.refreshState?.observeResultOnce(builder.lifecycleOwner, Observer {
             block.invoke(it)
         })
     }
