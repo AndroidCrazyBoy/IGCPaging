@@ -87,15 +87,20 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
         var visiblePosition = when (val layoutManager = recyclerView?.layoutManager) {
             is LinearLayoutManager,
             is GridLayoutManager -> {
-                val itemPosition = (layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
-                if (itemPosition < 0) {
-                    position
-                } else {
-                    itemPosition + 1
-                }
+                (layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+            }
+            is StaggeredGridLayoutManager -> {
+                val lastPositions = layoutManager.findLastVisibleItemPositions(IntArray(layoutManager.spanCount))
+                lastPositions.max() ?: -1
             }
             else -> position
         }
+        visiblePosition = if (visiblePosition < 0) {
+            position
+        } else {
+            visiblePosition + 1
+        }
+
         // 避免刷新时调用onBindViewHolder触发第二页的加载
         visiblePosition = if (recyclerView?.scrollState == SCROLL_STATE_IDLE) visiblePosition else position
         notifyUtil.itemLoadPosition(visiblePosition)

@@ -70,8 +70,8 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
     fun isInitial(): Boolean = initialLoad.value == NetworkState.IDEAL
 
     fun canLoadMore(): Boolean =
-        (loadMoreState.value == NetworkState.LOADED
-                || loadMoreState.value == NetworkState.IDEAL
+        (loadMoreState.value == NetworkState.IDEAL
+                || loadMoreState.value == NetworkState.LOADED
                 || loadMoreState.value?.status == Status.FAILED)
                 && loadMoreState.value != NetworkState.COMPLETE
                 && loadMoreState.value != NetworkState.COMPLETE_WITHOUT_TEXT
