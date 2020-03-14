@@ -30,8 +30,17 @@ class NotifyUtil(val adapter: IPagingAdapter) {
                     diffResult.dispatchUpdatesTo(adapter as RecyclerView.Adapter<*>)
                 }
             } catch (e: Exception) {
-                adapter.notifyDataSetChanged()
+                postNotifyDataAdapter()
             }
+        }
+    }
+
+    /**
+     * 防止 Cannot call this method while RecyclerView is computing a layout or scrolling 导致崩溃
+     */
+    private fun postNotifyDataAdapter() {
+        handler.post {
+            adapter.notifyDataSetChanged()
         }
     }
 
@@ -76,7 +85,8 @@ class NotifyUtil(val adapter: IPagingAdapter) {
         this.enableLoadMore = enableLoadMore
     }
 
-    private inner class DefaultDiffCallBack(var oldData: List<*>, var newData: List<*>) : DiffUtil.Callback() {
+    private inner class DefaultDiffCallBack(var oldData: List<*>, var newData: List<*>) :
+        DiffUtil.Callback() {
         override fun getOldListSize(): Int {
             return oldData.size
         }
