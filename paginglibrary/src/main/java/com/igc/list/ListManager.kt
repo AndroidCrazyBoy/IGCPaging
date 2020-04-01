@@ -182,6 +182,9 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         })
     }
 
+    /**
+     * 获取加载holderLayout
+     */
     fun getLoadHolderLayout() = builder.layoutHolder
 
     /**
