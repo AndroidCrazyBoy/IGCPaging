@@ -182,6 +182,8 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         })
     }
 
+    fun getLoadHolderLayout() = builder.layoutHolder
+
     /**
      * 网络变化后自动重试
      */

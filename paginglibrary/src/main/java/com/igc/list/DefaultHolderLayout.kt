@@ -10,15 +10,16 @@ import android.view.View
  * @author baolongxiang
  * @createTime 2019-08-05
  */
+@SuppressLint("InflateParams")
 open class DefaultHolderLayout(val appContext: Context) : ILoadMoreHolderLayout {
+    private val loadMoreView: View by lazy { LayoutInflater.from(appContext).inflate(R.layout.paging_load_more, null, false) }
+    private val loadFinishView: View by lazy { LayoutInflater.from(appContext).inflate(R.layout.paging_load_finish, null, false) }
 
-    @SuppressLint("InflateParams")
     override fun getLoadMoreLayout(): View {
-        return LayoutInflater.from(appContext).inflate(R.layout.paging_load_more, null, false)
+        return loadMoreView
     }
 
-    @SuppressLint("InflateParams")
     override fun getLoadFinishLayout(): View {
-        return LayoutInflater.from(appContext).inflate(R.layout.paging_load_finish, null, false)
+        return loadFinishView
     }
 }
