@@ -27,8 +27,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         if (builder.adapter == null || builder.recyclerView == null) {
             throw NullPointerException("ListManager adapter or recyclerView must not be null")
         }
-        builder.recyclerView!!.layoutManager = builder.layoutManager
-                ?: LinearLayoutManager(builder.context)
+        builder.recyclerView!!.layoutManager = builder.layoutManager ?: LinearLayoutManager(builder.context)
         builder.recyclerView!!.adapter = PagingAdapterWrapper(builder.adapter!!)
 
         // 是否显示默认刷新动画
@@ -181,11 +180,6 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
             block.invoke(it)
         })
     }
-
-    /**
-     * 获取加载holderLayout
-     */
-    fun getLoadHolderLayout() = builder.layoutHolder
 
     /**
      * 网络变化后自动重试

@@ -13,21 +13,11 @@ import android.view.ViewGroup
  */
 @SuppressLint("InflateParams")
 open class DefaultHolderLayout(val appContext: Context) : ILoadMoreHolderLayout {
-    private var parent: ViewGroup? = null
-    private val loadMoreView: View by lazy {
-        LayoutInflater.from(appContext).inflate(R.layout.paging_load_more, parent, false)
-    }
-    private val loadFinishView: View by lazy {
-        LayoutInflater.from(appContext).inflate(R.layout.paging_load_finish, parent, false)
-    }
-
     override fun getLoadMoreLayout(parent: ViewGroup): View {
-        this.parent = parent
-        return loadMoreView
+        return LayoutInflater.from(appContext).inflate(R.layout.paging_load_more, parent, false)
     }
 
     override fun getLoadFinishLayout(parent: ViewGroup): View {
-        this.parent = parent
-        return loadFinishView
+        return LayoutInflater.from(appContext).inflate(R.layout.paging_load_finish, parent, false)
     }
 }
