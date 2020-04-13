@@ -37,8 +37,8 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         val adapter = builder.recyclerView!!.adapter as PagingAdapterWrapper
         adapter.enableLoadMore(builder.enableLoadMore)
         if (builder.enableLoadMore) {
-            adapter.setLoadMoreView(builder.layoutHolder?.getLoadMoreLayout())
-            adapter.setLoadFinishView(builder.layoutHolder?.getLoadFinishLayout())
+            adapter.setLoadMoreView(builder.layoutHolder?.getLoadMoreLayout(builder.recyclerView!!))
+            adapter.setLoadFinishView(builder.layoutHolder?.getLoadFinishLayout(builder.recyclerView!!))
         }
         // 下拉刷新
         if (builder.refreshLayout != null) {
@@ -281,10 +281,10 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
             })[ListManager::class.java]
         }
 
-        fun build(fragment: Fragment): ListManager {
+        fun build(fragment: Fragment, context: Context): ListManager {
             this.lifecycleOwner = fragment
-            this.context = fragment.context
-            this.layoutHolder = if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context!!) else layoutHolder
+            this.context = context
+            this.layoutHolder = if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context) else layoutHolder
             return ViewModelProviders.of(fragment, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     return ListManager(this@Builder) as T

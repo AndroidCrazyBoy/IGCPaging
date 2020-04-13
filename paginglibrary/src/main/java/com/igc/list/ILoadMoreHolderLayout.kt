@@ -1,6 +1,7 @@
 package com.igc.list
 
 import android.view.View
+import android.view.ViewGroup
 
 /**
  * 上拉刷新和加载的itemView
@@ -9,7 +10,7 @@ import android.view.View
  */
 interface ILoadMoreHolderLayout {
 
-    fun getLoadMoreLayout(): View
+    fun getLoadMoreLayout(parent: ViewGroup): View
 
-    fun getLoadFinishLayout(): View
+    fun getLoadFinishLayout(parent: ViewGroup): View
 }
