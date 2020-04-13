@@ -284,7 +284,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         fun build(fragment: Fragment): ListManager {
             this.lifecycleOwner = fragment
             this.context = fragment.context
-            this.layoutHolder = GlobalListInitializer.instance.getListHolderLayout(context!!)
+            this.layoutHolder = if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context!!) else layoutHolder
             return ViewModelProviders.of(fragment, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     return ListManager(this@Builder) as T
