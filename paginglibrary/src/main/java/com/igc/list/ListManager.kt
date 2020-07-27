@@ -27,11 +27,13 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         if (builder.adapter == null || builder.recyclerView == null) {
             throw NullPointerException("ListManager adapter or recyclerView must not be null")
         }
-        builder.recyclerView!!.layoutManager = builder.layoutManager ?: LinearLayoutManager(builder.context)
+        builder.recyclerView!!.layoutManager =
+            builder.layoutManager ?: LinearLayoutManager(builder.context)
         builder.recyclerView!!.adapter = PagingAdapterWrapper(builder.adapter!!)
 
         // 是否显示默认刷新动画
-        builder.recyclerView!!.itemAnimator = if (builder.enableNotifyAnim) DefaultItemAnimator() else null
+        builder.recyclerView!!.itemAnimator =
+            if (builder.enableNotifyAnim) DefaultItemAnimator() else null
         // 上拉加载
         val adapter = builder.recyclerView!!.adapter as PagingAdapterWrapper
         adapter.enableLoadMore(builder.enableLoadMore)
@@ -102,13 +104,15 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         })
     }
 
-    fun changePageList(block: (old: PageList<Any>?) -> PageList<Any>?) {
+    fun changePageList(
+        onlySizeChange: Boolean = false,
+        block: (old: PageList<Any>?) -> PageList<Any>?
+    ) {
+        val pageList = listing?.pagedList?.value
+        val oldPageList = pageList?.copyPageList(deepCopy = !onlySizeChange)
         // 记录旧数据配合diffUtil进行数据刷新
-        if (builder.recyclerView?.adapter is PagingAdapterWrapper) {
-            (builder.recyclerView?.adapter as PagingAdapterWrapper).oldItemDatas =
-                    listing?.pagedList?.value?.copyPageList()
-        }
-        listing?.pagedList?.value = block.invoke(listing?.pagedList?.value)
+        (builder.recyclerView?.adapter as? PagingAdapterWrapper)?.oldItemDatas = oldPageList
+        listing?.pagedList?.value = block.invoke(pageList)
     }
 
     override fun onRefresh(refreshLayout: IRefreshLayout) {
@@ -259,7 +263,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
             return this
         }
 
-        fun <T : Any> bindPageList(listing: Listing<T>?): Builder {
+        fun <T> bindPageList(listing: Listing<T>?): Builder {
             this.listing = listing as Listing<Any>
             return this
         }
@@ -267,7 +271,8 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         fun build(activity: FragmentActivity): ListManager {
             this.lifecycleOwner = activity
             this.context = activity
-            this.layoutHolder = if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context!!) else layoutHolder
+            this.layoutHolder =
+                if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context!!) else layoutHolder
             return ViewModelProviders.of(activity, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     return ListManager(this@Builder) as T
@@ -278,7 +283,8 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         fun build(fragment: Fragment, context: Context): ListManager {
             this.lifecycleOwner = fragment
             this.context = context
-            this.layoutHolder = if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context) else layoutHolder
+            this.layoutHolder =
+                if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context) else layoutHolder
             return ViewModelProviders.of(fragment, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     return ListManager(this@Builder) as T
@@ -290,7 +296,10 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
     /**
      * 只监听结果状态(监听到一次结果（success or fail）后停止监听)
      */
-    private fun LiveData<NetworkState>.observeResultOnce(lifecycleOwner: LifecycleOwner, observer: Observer<NetworkState>) {
+    private fun LiveData<NetworkState>.observeResultOnce(
+        lifecycleOwner: LifecycleOwner,
+        observer: Observer<NetworkState>
+    ) {
         observe(lifecycleOwner, object : Observer<NetworkState> {
             override fun onChanged(state: NetworkState?) {
                 observer.onChanged(state)

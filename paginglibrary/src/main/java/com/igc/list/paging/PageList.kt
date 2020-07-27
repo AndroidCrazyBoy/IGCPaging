@@ -1,12 +1,8 @@
 package com.igc.list.paging
 
 import android.support.annotation.Keep
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
+import java.io.*
 import java.util.*
-import kotlin.collections.AbstractList
 import kotlin.collections.ArrayList
 
 /**
@@ -32,7 +28,11 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
     internal val notifyCallbacks = mutableListOf<NotifyCallback>()
 
     companion object {
-        fun <Key, Value> create(key: Key?, config: Config, dataSource: DataSource<Key, Value>): PageList<Value> {
+        fun <Key, Value> create(
+            key: Key?,
+            config: Config,
+            dataSource: DataSource<Key, Value>
+        ): PageList<Value> {
             return ContiguousPageList(key, config, dataSource as PageKeyDataSource<Key, Value>)
         }
     }
@@ -77,13 +77,13 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
         return pageStore.get(index)
     }
 
-    fun copyPageList(): PageList<T> {
+    fun copyPageList(deepCopy: Boolean = true): PageList<T> {
         val copyResult = object : PageList<T>(dataSource) {
             override fun loadAroundInternal(index: Int) {
                 this@PageList.loadAroundInternal(index)
             }
         }
-        copyResult.pageStore.addAll(deepCopy(pageStore))
+        copyResult.pageStore.addAll(if (deepCopy) deepCopy(pageStore) else pageStore)
         copyResult.pageSizeStore.addAll(pageSizeStore)
         copyResult.notifyCallbacks.addAll(notifyCallbacks)
         return copyResult
@@ -94,16 +94,24 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
      */
     @Suppress("UNCHECKED_CAST")
     fun deepCopy(src: List<T>): List<T> {
+        var byteOut: OutputStream? = null
+        var outStream: ObjectOutputStream? = null
+        var byteIn: InputStream? = null
+        var inStream: ObjectInputStream? = null
         try {
-            val byteOut = ByteArrayOutputStream()
-            val outStream = ObjectOutputStream(byteOut)
+            byteOut = ByteArrayOutputStream()
+            outStream = ObjectOutputStream(byteOut)
             outStream.writeObject(src)
-
-            val byteIn = ByteArrayInputStream(byteOut.toByteArray())
-            val inStream = ObjectInputStream(byteIn)
+            byteIn = ByteArrayInputStream(byteOut.toByteArray())
+            inStream = ObjectInputStream(byteIn)
             return inStream.readObject() as List<T>
         } catch (e: Exception) {
             return Collections.emptyList()
+        } finally {
+            byteOut?.close()
+            outStream?.close()
+            byteIn?.close()
+            inStream?.close()
         }
     }
 
@@ -132,6 +140,11 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
 
     fun clear2() {
         pageStore.clear()
+    }
+
+    fun containsAll2(elements: PageList<T>?): Boolean {
+        elements ?: return false
+        return pageStore.containsAll(elements)
     }
 
     fun loadAround(index: Int) {

@@ -15,6 +15,6 @@ class TestRepository : DataSource.DataFactory<String, BaseBean> {
     }
 
     fun getTestData(param: String): Listing<BaseBean> {
-        return fetchPaing(param)
+        return fetchPaing(param, PageList.Config(15))
     }
 }

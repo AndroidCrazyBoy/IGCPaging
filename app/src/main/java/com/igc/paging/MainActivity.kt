@@ -34,24 +34,24 @@ class MainActivity : AppCompatActivity() {
         }
 
         testItemDelete.setOnClickListener {
-            listManager.changePageList {
+            listManager.changePageList(true) {
                 it?.removeAt2(0)
                 it
             }
         }
 
         testItemNotify.setOnClickListener {
-            //            listManager.changePageList {
-//                it ?: return@changePageList it
-////                (it[0] as TestBean).otherText = "00000000"
-////                (it[1] as TestBean).otherText = "11111111"
+            listManager.changePageList {
+                it ?: return@changePageList it
+                (it[0] as TestBean).otherText = "00000000"
+                (it[1] as TestBean).otherText = "11111111"
 //                it.forEach {
 //                    (it as TestBean).otherText = "123123123"
 //                }
-//                it
-//            }
+                it
+            }
 
-            listManager.bindPageList(repository.getTestData("REBIND PAGING") as Listing<Any>)
+//            listManager.bindPageList(repository.getTestData("REBIND PAGING") as Listing<Any>)
         }
 
 //         listManager.bindPageList(repository.getTestData("TEST PAGING"))
