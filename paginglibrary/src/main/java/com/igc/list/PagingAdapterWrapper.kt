@@ -1,9 +1,8 @@
 package com.igc.list
 
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE
+import android.support.v7.widget.RecyclerView.NO_POSITION
 import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +18,8 @@ import kotlinx.android.synthetic.main.item_append.view.*
  * @author baolongxiang
  * @createTime 2019-07-01
  */
-class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PagingAdapterWrapper(val adapter: IPagingAdapter) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         private const val TYPE_APPEND = 1001
@@ -59,7 +59,9 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == TYPE_APPEND) {
-            AppendViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_append, parent, false))
+            AppendViewHolder(
+                LayoutInflater.from(parent.context).inflate(R.layout.item_append, parent, false)
+            )
         } else {
             adapter.onCreateViewHolder(parent, viewType)
         }
@@ -74,7 +76,11 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
         }
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
         if (getItemViewType(position) == TYPE_APPEND) {
             (holder as AppendViewHolder).bind(loadMoreState, loadMoreView, loadFinishView)
         } else {
@@ -167,11 +173,21 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) : RecyclerView.Adapter<R
     }
 
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
+        if (holder.adapterPosition == NO_POSITION) {
+            return
+        }
         if (getItemViewType(holder.adapterPosition) == TYPE_APPEND) {
             setFullSpan(holder)
         } else {
             adapter.onViewAttachedToWindow(holder)
         }
+    }
+
+    override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
+        if (holder.adapterPosition == NO_POSITION || getItemViewType(holder.adapterPosition) == TYPE_APPEND) {
+            return
+        }
+        adapter.onViewDetachedFromWindow(holder)
     }
 
     /**
