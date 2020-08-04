@@ -44,7 +44,7 @@ uploadArchives {
     configuration = configurations.archives
     repositories {
         mavenDeployer {
-            repository(url: 'http://app.mvn-int.igetcool.com/repository/igetcool/') {
+            repository(url: 'http://app-mvn-test.igetcool.com/repository/igetcool/') {
                 authentication(userName: 'igetcool_pub', password: '123456')
             }
             pom.project {
