@@ -93,7 +93,7 @@ static def addRepos(RepositoryHandler handler) {
     handler.jcenter()
     handler.mavenCentral()
     handler.maven {
-        url "http://app.mvn-int.igetcool.com/repository/igetcool/"
+        url "http://app-mvn-test.igetcool.com/repository/igetcool/"
         credentials {
             username 'igetcool_pub'
             password '123456'
