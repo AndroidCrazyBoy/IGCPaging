@@ -186,6 +186,13 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
     }
 
     /**
+     * 重置上拉加载状态。
+     */
+    fun resetLoadMoreState() {
+        listing?.resetLoadMoreState()
+    }
+
+    /**
      * 网络变化后自动重试
      */
     fun onNetWorkChangedDoRetry(change: Boolean) {

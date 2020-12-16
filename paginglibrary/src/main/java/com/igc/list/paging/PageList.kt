@@ -138,6 +138,14 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
         pageStore.add(index, element)
     }
 
+    fun addAll2(elements: Collection<T>) : Boolean {
+        return pageStore.addAll(elements)
+    }
+
+    fun addAll2(index: Int, elements: Collection<T>) : Boolean {
+        return pageStore.addAll(index, elements)
+    }
+
     fun clear2() {
         pageStore.clear()
     }

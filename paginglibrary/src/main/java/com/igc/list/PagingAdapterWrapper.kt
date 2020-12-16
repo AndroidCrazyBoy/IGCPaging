@@ -184,7 +184,7 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) :
     }
 
     override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
-        if (holder.adapterPosition == NO_POSITION || getItemViewType(holder.adapterPosition) == TYPE_APPEND || itemCount == 0) {
+        if (itemCount == 0 || holder.adapterPosition == NO_POSITION || getItemViewType(holder.adapterPosition) == TYPE_APPEND) {
             return
         }
         adapter.onViewDetachedFromWindow(holder)

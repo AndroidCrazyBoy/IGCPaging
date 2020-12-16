@@ -23,16 +23,23 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
 
     private var retry: (() -> Any)? = null
 
-    private var pageCount = INIT_PAGE_COUNT
+    private var pageIndex = INIT_PAGE_COUNT
 
-    override fun dispatchLoadInitial(key: Key?, pageSize: Int, receiver: PageResult.Receiver<Value>) {
+    override fun dispatchLoadInitial(
+        key: Key?,
+        pageSize: Int,
+        receiver: PageResult.Receiver<Value>
+    ) {
         Logger.d("Paging ---->dispatchLoadInitial LOADING")
         refresh = {
             if (initialLoad.value != NetworkState.LOADING) {
-                pageCount = INIT_PAGE_COUNT
+                pageIndex = INIT_PAGE_COUNT
                 initialLoad.value = NetworkState.LOADING
                 loadMoreState.value = NetworkState.IDEAL
-                loadInitial(LoadParams(key, pageSize, pageCount), LoadCallbackImpl(PageResult.INIT, receiver))
+                loadInitial(
+                    LoadParams(key, pageSize, pageIndex),
+                    LoadCallbackImpl(PageResult.INIT, receiver)
+                )
             }
         }
         refresh!!.invoke()
@@ -46,14 +53,20 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
             Logger.d("Paging ---->dispatchLoadAfter COMPLETE")
             return
         }
-        // 加载错误再次加载不需要增加pageCount
-        if (loadMoreState.value?.status != Status.FAILED) {
-            pageCount++
+
+        when (loadMoreState.value?.status) {
+            Status.IDEAL -> pageIndex = INIT_PAGE_COUNT + 1
+            Status.FAILED -> pageIndex
+            else -> pageIndex++
         }
+
         retry = {
             if (loadMoreState.value != NetworkState.LOADING) {
                 loadMoreState.value = NetworkState.LOADING
-                loadAfter(LoadParams(key, pageSize, pageCount), LoadCallbackImpl(PageResult.APPEND, receiver))
+                loadAfter(
+                    LoadParams(key, pageSize, pageIndex),
+                    LoadCallbackImpl(PageResult.APPEND, receiver)
+                )
             }
         }
         retry!!.invoke()
@@ -82,7 +95,8 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
 
     inner class LoadParams(var key: Key?, val pageSize: Int, val pageIndex: Int)
 
-    inner class LoadCallbackImpl<Value>(val type: Int, val receiver: PageResult.Receiver<Value>) : LoadCallback<Value> {
+    inner class LoadCallbackImpl<Value>(val type: Int, val receiver: PageResult.Receiver<Value>) :
+        LoadCallback<Value> {
         override fun onFinish() {
             Logger.d("Paging ---->LoadCallbackImpl onFinish")
             receiver.onPageResult(PageResult.FINISHED, PageResult(Collections.emptyList()))

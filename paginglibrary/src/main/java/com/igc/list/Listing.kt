@@ -39,4 +39,8 @@ data class Listing<T>(
      * 销毁处理
      */
     val destroy: (() -> Any)
-)
+) {
+    fun resetLoadMoreState() {
+        pagedList?.value?.dataSource?.loadMoreState?.value = NetworkState.IDEAL
+    }
+}
