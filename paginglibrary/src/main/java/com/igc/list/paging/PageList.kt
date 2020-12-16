@@ -168,8 +168,9 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
 
     fun filterDuplicatesIfNeeded(elements: Collection<T>): Collection<T> {
         return dataSource.filterDuplicatesCondition()?.let { callback ->
+            val result = elements.toMutableList()
             try {
-                val iterator = elements.toMutableList().iterator()
+                val iterator = result.iterator()
                 while (iterator.hasNext()) {
                     val id = callback(iterator.next())
                     if (id != FILTER_IGNORE && filterDuplicateIds.contains(id)) {
@@ -183,7 +184,7 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-            elements
+            result
         } ?: elements
     }
 
