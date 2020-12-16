@@ -1,6 +1,7 @@
 package com.igc.list.paging
 
 import android.arch.lifecycle.MutableLiveData
+import com.igc.list.paging.PageList.Companion.FILTER_IGNORE
 import com.orhanobut.logger.Logger
 import java.util.*
 
@@ -88,6 +89,15 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
                 || loadMoreState.value?.status == Status.FAILED)
                 && loadMoreState.value != NetworkState.COMPLETE
                 && loadMoreState.value != NetworkState.COMPLETE_WITHOUT_TEXT
+
+    /**
+     * 不为空或[FILTER_IGNORE]，会自动去重
+     * @param data 每一条数据
+     * @return Long 回调返回一个整数，值相同则过滤，仅保留第一个
+     */
+    open fun filterDuplicatesCondition(): ((Value) -> Long)? {
+        return null
+    }
 
     abstract fun loadInitial(params: LoadParams, callback: LoadCallback<Value>)
 

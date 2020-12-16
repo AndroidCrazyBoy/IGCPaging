@@ -1,6 +1,7 @@
 package com.igc.list.paging
 
 import android.support.annotation.Keep
+import com.orhanobut.logger.Logger
 import java.io.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -18,16 +19,18 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
     internal val pageStore = mutableListOf<T>()
 
     /**
-     * 以每一页数据为单位进行存储，数组个数为页数
-     */
-    internal val pageSizeStore: MutableList<List<T>> = mutableListOf()
-
-    /**
      * adapter notify callback
      */
     internal val notifyCallbacks = mutableListOf<NotifyCallback>()
 
+    /**
+     * 存储[PageKeyDataSource.filterDuplicatesCondition]返回的数据，用于去重处理
+     */
+    internal val filterDuplicateIds = mutableListOf<Long>()
+
     companion object {
+        const val FILTER_IGNORE = -1L
+
         fun <Key, Value> create(
             key: Key?,
             config: Config,
@@ -37,21 +40,18 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
         }
     }
 
-    fun initData(data: List<T>) {
+    fun initData(data: Collection<T>) {
         pageStore.clear()
         pageStore.addAll(data)
-        pageSizeStore.clear()
-        pageSizeStore.add(data)
         notifyChange(Collections.emptyList(), pageStore)
     }
 
-    fun addData(data: List<T>) {
+    fun addData(data: Collection<T>) {
         if (data.isEmpty()) {
             return
         }
         val oldData = ArrayList<T>(pageStore)
         pageStore.addAll(data)
-        pageSizeStore.add(data)
         notifyChange(oldData, pageStore)
     }
 
@@ -70,9 +70,6 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
     override val size: Int
         get() = pageStore.size
 
-    val pageCount: Int
-        get() = pageSizeStore.size
-
     override fun get(index: Int): T {
         return pageStore.get(index)
     }
@@ -84,7 +81,7 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
             }
         }
         copyResult.pageStore.addAll(if (deepCopy) deepCopy(pageStore) else pageStore)
-        copyResult.pageSizeStore.addAll(pageSizeStore)
+        copyResult.filterDuplicateIds.addAll(filterDuplicateIds)
         copyResult.notifyCallbacks.addAll(notifyCallbacks)
         return copyResult
     }
@@ -119,6 +116,7 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
         if (pageStore.isEmpty()) {
             return null
         }
+        removeFilterId(get(index))
         return pageStore.removeAt(index)
     }
 
@@ -127,26 +125,33 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
     }
 
     fun remove2(element: T): Boolean {
+        removeFilterId(element)
         return pageStore.remove(element)
     }
 
     fun add2(element: T): Boolean {
-        return pageStore.add(element)
+        if (addFilterId(element)) {
+            return pageStore.add(element)
+        }
+        return false
     }
 
     fun add2(index: Int, element: T) {
-        pageStore.add(index, element)
+        if (addFilterId(element)) {
+            pageStore.add(index, element)
+        }
     }
 
-    fun addAll2(elements: Collection<T>) : Boolean {
-        return pageStore.addAll(elements)
+    fun addAll2(elements: Collection<T>): Boolean {
+        return pageStore.addAll(filterDuplicatesIfNeeded(elements))
     }
 
-    fun addAll2(index: Int, elements: Collection<T>) : Boolean {
-        return pageStore.addAll(index, elements)
+    fun addAll2(index: Int, elements: Collection<T>): Boolean {
+        return pageStore.addAll(index, filterDuplicatesIfNeeded(elements))
     }
 
     fun clear2() {
+        filterDuplicateIds.clear()
         pageStore.clear()
     }
 
@@ -158,6 +163,43 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
     fun loadAround(index: Int) {
         if (index in 1 until size) {
             loadAroundInternal(index)
+        }
+    }
+
+    fun filterDuplicatesIfNeeded(elements: Collection<T>): Collection<T> {
+        return dataSource.filterDuplicatesCondition()?.let { callback ->
+            try {
+                val iterator = elements.toMutableList().iterator()
+                while (iterator.hasNext()) {
+                    val id = callback(iterator.next())
+                    if (id != FILTER_IGNORE && filterDuplicateIds.contains(id)) {
+                        // 重复过滤
+                        Logger.i("Paging --- > 过滤 ID: %d", id)
+                        iterator.remove()
+                    } else {
+                        filterDuplicateIds.add(id)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            elements
+        } ?: elements
+    }
+
+    private fun addFilterId(element: T): Boolean {
+        dataSource.filterDuplicatesCondition()?.invoke(element)?.let { id ->
+            if (filterDuplicateIds.contains(id)) {
+                return false
+            }
+            filterDuplicateIds.add(id)
+        }
+        return true
+    }
+
+    private fun removeFilterId(element: T) {
+        dataSource.filterDuplicatesCondition()?.invoke(element)?.let { id ->
+            filterDuplicateIds.remove(id)
         }
     }
 
