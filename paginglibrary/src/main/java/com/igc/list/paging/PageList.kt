@@ -43,6 +43,8 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
     fun initData(data: Collection<T>) {
         pageStore.clear()
         pageStore.addAll(data)
+        filterDuplicateIds.clear()
+
         notifyChange(Collections.emptyList(), pageStore)
     }
 
@@ -151,8 +153,8 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
     }
 
     fun clear2() {
-        filterDuplicateIds.clear()
         pageStore.clear()
+        filterDuplicateIds.clear()
     }
 
     fun containsAll2(elements: PageList<T>?): Boolean {
