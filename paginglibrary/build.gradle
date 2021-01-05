@@ -48,7 +48,7 @@ uploadArchives {
                 authentication(userName: 'igetcool_pub', password: '123456')
             }
             pom.project {
-                version 'beat-1.4.3'
+                version 'beat-1.4.4'
                 artifactId 'auto-paging'
                 groupId 'com.igetcool.paging'
                 packaging 'paging'

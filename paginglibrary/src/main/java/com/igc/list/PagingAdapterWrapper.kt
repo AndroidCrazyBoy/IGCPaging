@@ -12,6 +12,7 @@ import com.igc.list.paging.NotifyUtil
 import com.igc.list.paging.PageList
 import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.item_append.view.*
+import java.lang.Exception
 
 /**
  * 分页加载adapter 包装类
@@ -151,25 +152,35 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) :
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        this.recyclerView = recyclerView
-        adapter.onAttachedToRecyclerView(recyclerView)
-        val layoutManager = recyclerView.layoutManager
-        if (layoutManager is GridLayoutManager) {
-            val spanSizeLookup = layoutManager.spanSizeLookup
-            layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    return if (hasExtraRow() && position == itemCount - 1) {
-                        layoutManager.spanCount
-                    } else {
-                        spanSizeLookup.getSpanSize(position)
+        try {
+            this.recyclerView = recyclerView
+            adapter.onAttachedToRecyclerView(recyclerView)
+            val layoutManager = recyclerView.layoutManager
+            if (layoutManager is GridLayoutManager) {
+                val spanSizeLookup = layoutManager.spanSizeLookup
+                layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int {
+                        return if (hasExtraRow() && position == itemCount - 1) {
+                            layoutManager.spanCount
+                        } else {
+                            spanSizeLookup.getSpanSize(position)
+                        }
                     }
                 }
             }
+        } catch (e: Exception) {
+            adapter.notifyDataSetChanged()
+            e.printStackTrace()
         }
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        adapter.onDetachedFromRecyclerView(recyclerView)
+        try {
+            adapter.onDetachedFromRecyclerView(recyclerView)
+        } catch (e: Exception) {
+            adapter.notifyDataSetChanged()
+            e.printStackTrace()
+        }
     }
 
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
