@@ -12,7 +12,6 @@ import com.igc.list.paging.PageList
 import com.igc.list.paging.Status
 import com.orhanobut.logger.Logger
 
-
 /**
  * recyclerView 管理器
  * @author baolongxiang
@@ -20,7 +19,6 @@ import com.orhanobut.logger.Logger
  */
 @Suppress("UNCHECKED_CAST")
 class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.PullRefreshListener {
-
     private var listing: Listing<Any>? = null
 
     init {
@@ -30,7 +28,6 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         builder.recyclerView!!.layoutManager =
             builder.layoutManager ?: LinearLayoutManager(builder.context)
         builder.recyclerView!!.adapter = PagingAdapterWrapper(builder.adapter!!)
-
         // 是否显示默认刷新动画
         builder.recyclerView!!.itemAnimator =
             if (builder.enableNotifyAnim) DefaultItemAnimator() else null
@@ -86,11 +83,9 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         listing.pagedList?.observe(builder.lifecycleOwner, Observer {
             submitList(it)
         })
-
         listing.loadMoreState?.observe(builder.lifecycleOwner, Observer {
             setLoadedState(it)
         })
-
         listing.refreshState?.observe(builder.lifecycleOwner, Observer {
             it ?: return@Observer
             when (it.status) {
@@ -117,6 +112,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
 
     override fun onRefresh(refreshLayout: IRefreshLayout) {
         refresh()
+        builder.refreshListener?.onRefresh(refreshLayout)
     }
 
     /**
@@ -209,17 +205,12 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
     }
 
     class Builder {
-
         internal var recyclerView: RecyclerView? = null
-
         internal var refreshLayout: IRefreshLayout? = null
-
+        internal var refreshListener: IRefreshLayout.PullRefreshListener? = null
         internal var adapter: IPagingAdapter? = null
-
         internal var context: Context? = null
-
         internal var layoutManager: RecyclerView.LayoutManager? = null
-
         internal var listing: Listing<Any>? = null
 
         /**
@@ -236,9 +227,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
          * 加载更多和下拉刷新样式
          */
         internal var layoutHolder: ILoadMoreHolderLayout? = null
-
         internal lateinit var lifecycleOwner: LifecycleOwner
-
         fun setAdapter(adapter: IPagingAdapter): Builder {
             this.adapter = adapter
             return this
@@ -264,9 +253,14 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
             return this
         }
 
-        fun into(recyclerView: RecyclerView, refreshLayout: IRefreshLayout? = null): Builder {
+        fun into(
+            recyclerView: RecyclerView,
+            refreshLayout: IRefreshLayout? = null,
+            refreshListener: IRefreshLayout.PullRefreshListener? = null
+        ): Builder {
             this.recyclerView = recyclerView
             this.refreshLayout = refreshLayout
+            this.refreshListener = refreshListener
             return this
         }
 
