@@ -1,8 +1,8 @@
 package com.igc.paging
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.igc.list.*
 import com.igc.list.paging.Status
 import com.orhanobut.logger.Logger
@@ -20,7 +20,11 @@ class MainActivity : AppCompatActivity() {
 
         val listManager = ListManager.Builder()
             .setAdapter(buildAdapter())
-            .setLayoutManager(LinearLayoutManager(this))
+            .setLayoutManager(
+                androidx.recyclerview.widget.LinearLayoutManager(
+                    this
+                )
+            )
             .enableNotifyAnim(true)
             .bindPageList(repository.getTestData("TEST PAGING"))
             .into(recyclerView, refreshLayout)

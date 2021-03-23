@@ -1,6 +1,6 @@
 package com.igc.list.paging
 
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import com.orhanobut.logger.Logger
 import java.io.*
 import java.util.*

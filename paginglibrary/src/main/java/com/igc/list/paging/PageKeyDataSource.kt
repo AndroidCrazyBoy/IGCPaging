@@ -1,6 +1,6 @@
 package com.igc.list.paging
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import com.igc.list.paging.PageList.Companion.FILTER_IGNORE
 import com.orhanobut.logger.Logger
 import java.util.*
@@ -43,7 +43,7 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
                 )
             }
         }
-        refresh!!.invoke()
+        refresh?.invoke()
         retry = refresh
     }
 
@@ -69,8 +69,7 @@ abstract class PageKeyDataSource<Key, Value> : DataSource<Key, Value>() {
                     LoadCallbackImpl(PageResult.APPEND, receiver)
                 )
             }
-        }
-        retry!!.invoke()
+        }.also { it.invoke() }
     }
 
     fun retry() {

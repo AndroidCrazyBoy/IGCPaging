@@ -1,12 +1,12 @@
 package com.igc.list
 
-import android.arch.lifecycle.*
 import android.content.Context
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.*
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.igc.list.paging.NetworkState
 import com.igc.list.paging.PageList
 import com.igc.list.paging.Status
@@ -17,35 +17,31 @@ import com.orhanobut.logger.Logger
  * @author baolongxiang
  * @createTime 2019-07-01
  */
-@Suppress("UNCHECKED_CAST")
 class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.PullRefreshListener {
     private var listing: Listing<Any>? = null
 
     init {
-        if (builder.adapter == null || builder.recyclerView == null) {
+        val adapter1 = builder.adapter
+        val recyclerView = builder.recyclerView
+        if (adapter1 == null || recyclerView == null) {
             throw NullPointerException("ListManager adapter or recyclerView must not be null")
         }
-        builder.recyclerView!!.layoutManager =
-            builder.layoutManager ?: LinearLayoutManager(builder.context)
-        builder.recyclerView!!.adapter = PagingAdapterWrapper(builder.adapter!!)
+        recyclerView.layoutManager = builder.layoutManager ?: LinearLayoutManager(builder.context)
+        recyclerView.adapter = PagingAdapterWrapper(adapter1)
         // 是否显示默认刷新动画
-        builder.recyclerView!!.itemAnimator =
-            if (builder.enableNotifyAnim) DefaultItemAnimator() else null
+        recyclerView.itemAnimator = if (builder.enableNotifyAnim) DefaultItemAnimator() else null
         // 上拉加载
-        val adapter = builder.recyclerView!!.adapter as PagingAdapterWrapper
+        val adapter = recyclerView.adapter as PagingAdapterWrapper
         adapter.enableLoadMore(builder.enableLoadMore)
         if (builder.enableLoadMore) {
-            adapter.setLoadMoreView(builder.layoutHolder?.getLoadMoreLayout(builder.recyclerView!!))
-            adapter.setLoadFinishView(builder.layoutHolder?.getLoadFinishLayout(builder.recyclerView!!))
+            adapter.setLoadMoreView(builder.layoutHolder?.getLoadMoreLayout(recyclerView))
+            adapter.setLoadFinishView(builder.layoutHolder?.getLoadFinishLayout(recyclerView))
         }
         // 下拉刷新
-        if (builder.refreshLayout != null) {
-            val refreshLayout = builder.refreshLayout!!
-            refreshLayout.setOnPullRefreshListener(this)
-        }
+        builder.refreshLayout?.setOnPullRefreshListener(this)
         // 绑定listing（数据及状态）
-        if (builder.listing != null) {
-            bindPageList(builder.listing!!)
+        builder.listing?.let {
+            bindPageList(it)
         }
     }
 
@@ -122,7 +118,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         checkNotNull(listing) {
             "you must be call bindWith() before retry()"
         }
-        listing!!.retry()
+        listing?.retry?.invoke()
     }
 
     /**
@@ -132,7 +128,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         checkNotNull(listing) {
             "ListManager you must be call bindWith() before refresh()"
         }
-        listing!!.refresh()
+        listing?.refresh?.invoke()
     }
 
     @Deprecated("rename", ReplaceWith("observeRefreshState(block)"))
@@ -192,8 +188,8 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
      * 网络变化后自动重试
      */
     fun onNetWorkChangedDoRetry(change: Boolean) {
-        val loadMoreError = listing!!.loadMoreState?.value?.status == Status.FAILED
-        val refreshError = listing!!.refreshState?.value?.status == Status.FAILED
+        val loadMoreError = listing?.loadMoreState?.value?.status == Status.FAILED
+        val refreshError = listing?.refreshState?.value?.status == Status.FAILED
         if (change && (loadMoreError || refreshError)) {
             retry()
         }
@@ -204,6 +200,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         listing?.destroy?.invoke()
     }
 
+    @Suppress("UNCHECKED_CAST")
     class Builder {
         internal var recyclerView: RecyclerView? = null
         internal var refreshLayout: IRefreshLayout? = null
@@ -272,8 +269,10 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         fun build(activity: FragmentActivity): ListManager {
             this.lifecycleOwner = activity
             this.context = activity
-            this.layoutHolder =
-                if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context!!) else layoutHolder
+            this.layoutHolder = if (layoutHolder == null)
+                GlobalListInitializer.instance.getListHolderLayout(activity)
+            else
+                layoutHolder
             return ViewModelProviders.of(activity, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     return ListManager(this@Builder) as T
