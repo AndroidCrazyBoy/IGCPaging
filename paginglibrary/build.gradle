@@ -14,7 +14,7 @@ android {
         versionName "1.0"
         multiDexEnabled = true
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     buildTypes {
@@ -29,9 +29,9 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    testImplementation 'junit:junit:4.13'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     implementation deps.support.appcompat_v7
     implementation deps.support.recyclerview
@@ -48,7 +48,7 @@ uploadArchives {
                 authentication(userName: 'igetcool_pub', password: '123456')
             }
             pom.project {
-                version 'beat-1.4.4'
+                version '1.4.5'
                 artifactId 'auto-paging'
                 groupId 'com.igetcool.paging'
                 packaging 'paging'

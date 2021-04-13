@@ -1,7 +1,7 @@
 package com.igc.paging
 
 import android.os.Bundle
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +30,7 @@ class TestViewBinder : ItemViewBinder<TestBean, TestViewBinder.ViewHolder>() {
         }
     }
 
-    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(val view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
         fun bind(item: TestBean) {
             view.itemText.text = if (item.otherText == null) item.text else item.otherText
         }

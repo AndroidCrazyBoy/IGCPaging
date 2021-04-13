@@ -1,7 +1,7 @@
 package com.igc.list
 
-import android.arch.lifecycle.MutableLiveData
-import android.support.annotation.Keep
+import androidx.lifecycle.MutableLiveData
+import androidx.annotation.Keep
 import com.igc.list.paging.NetworkState
 import com.igc.list.paging.PageList
 
