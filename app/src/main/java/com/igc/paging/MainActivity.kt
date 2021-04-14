@@ -21,22 +21,23 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val listManager = ListManager.Builder()
-                .setAdapter(buildAdapter())
-                .setLayoutManager(
-                        LinearLayoutManager(
-                                this
-                        )
+            .setAdapter(buildAdapter())
+            .setLayoutManager(
+                LinearLayoutManager(
+                    this
                 )
-                .enableNotifyAnim(true)
-                .bindPageList(repository.getTestData("TEST PAGING"))
-                .into(recyclerView, refreshLayout)
-                .build(this)
+            )
+            .enableNotifyAnim(true)
+            .bindPageList(repository.getTestData("TEST PAGING"))
+            .into(recyclerView, refreshLayout)
+            .build(this)
 
 
         listManager.observeRefreshState { state ->
             if (state?.status == Status.SUCCESS) {
                 Logger.d("TEST --- SUCCESS")
             }
+            Logger.d("TEST --- state=${state?.msg}")
         }
 
         testItemDelete.setOnClickListener {

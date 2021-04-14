@@ -19,6 +19,8 @@ import com.orhanobut.logger.Logger
  */
 class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.PullRefreshListener {
     private var listing: Listing<Any>? = null
+    private var observeRefreshBlock: ((state: NetworkState?) -> Unit)? = null
+    private var observeLoadMoreBlock: ((state: NetworkState?) -> Unit)? = null
 
     init {
         val adapter1 = builder.adapter
@@ -82,16 +84,15 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
             submitList(it)
         })
         listing.loadMoreState?.observe(builder.lifecycleOwner, Observer {
+            if (it == NetworkState.LOADED || it.status == Status.FAILED) {
+                observeLoadMoreBlock?.invoke(it)
+            }
             setLoadedState(it)
         })
         listing.refreshState?.observe(builder.lifecycleOwner, Observer {
-            when (it?.status) {
-                Status.SUCCESS,
-                Status.FAILED -> {
-                    builder.refreshLayout?.finishPullRefresh()
-                }
-                else -> {
-                }
+            if (it == NetworkState.LOADED || it.status == Status.FAILED) {
+                observeRefreshBlock?.invoke(it)
+                builder.refreshLayout?.finishPullRefresh()
             }
         })
         // 防止重新绑定数据后未及时刷新导致的IndexOfBound异常
@@ -99,8 +100,8 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
     }
 
     fun changePageList(
-            onlySizeChange: Boolean = false,
-            block: (old: PageList<Any>?) -> PageList<Any>?
+        onlySizeChange: Boolean = false,
+        block: (old: PageList<Any>?) -> PageList<Any>?
     ) {
         val pageList = listing?.pagedList?.value
         val oldPageList = pageList?.copyPageList(deepCopy = !onlySizeChange)
@@ -149,7 +150,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
      */
     fun getRefreshResultStateOnce(block: (state: NetworkState?) -> Unit) {
         listing?.refreshState?.observeResultOnce(builder.lifecycleOwner, Observer {
-            if (it == NetworkState.LOADED) {
+            if (it == NetworkState.LOADED || it.status == Status.FAILED) {
                 block.invoke(it)
             }
         })
@@ -160,7 +161,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
      */
     fun getLoadMoreResultStateOnce(block: (state: NetworkState?) -> Unit) {
         listing?.loadMoreState?.observeResultOnce(builder.lifecycleOwner, Observer {
-            if (it == NetworkState.LOADED) {
+            if (it == NetworkState.LOADED || it.status == Status.FAILED) {
                 block.invoke(it)
             }
         })
@@ -170,22 +171,14 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
      * 获取下拉刷新的状态信息
      */
     fun observeRefreshState(block: (state: NetworkState?) -> Unit) {
-        listing?.refreshState?.observe(builder.lifecycleOwner, Observer {
-            if (it == NetworkState.LOADED) {
-                block.invoke(it)
-            }
-        })
+        this.observeRefreshBlock = block
     }
 
     /**
      * 获取加载更多的状态信息
      */
     fun observeLoadMoreState(block: (state: NetworkState?) -> Unit) {
-        listing?.loadMoreState?.observe(builder.lifecycleOwner, Observer {
-            if (it == NetworkState.LOADED) {
-                block.invoke(it)
-            }
-        })
+        this.observeLoadMoreBlock = block
     }
 
     /**
@@ -262,9 +255,9 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         }
 
         fun into(
-                recyclerView: RecyclerView,
-                refreshLayout: IRefreshLayout? = null,
-                refreshListener: IRefreshLayout.PullRefreshListener? = null
+            recyclerView: RecyclerView,
+            refreshLayout: IRefreshLayout? = null,
+            refreshListener: IRefreshLayout.PullRefreshListener? = null
         ): Builder {
             this.recyclerView = recyclerView
             this.refreshLayout = refreshLayout
@@ -295,7 +288,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
             this.lifecycleOwner = fragment
             this.context = context
             this.layoutHolder =
-                    if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context) else layoutHolder
+                if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context) else layoutHolder
             return ViewModelProviders.of(fragment, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     return ListManager(this@Builder) as T
@@ -308,8 +301,8 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
      * 只监听结果状态(监听到一次结果（success or fail）后停止监听)
      */
     private fun LiveData<NetworkState>.observeResultOnce(
-            lifecycleOwner: LifecycleOwner,
-            observer: Observer<NetworkState>
+        lifecycleOwner: LifecycleOwner,
+        observer: Observer<NetworkState>
     ) {
         observe(lifecycleOwner, object : Observer<NetworkState> {
             override fun onChanged(state: NetworkState?) {

@@ -15,6 +15,7 @@ class TestDataSource : PageKeyDataSource<String, BaseBean>() {
         itemIndex = 0
         callback.onResult(mutableListOf(EmptyBean()))
         handler.postDelayed({
+//            callback.onError(Throwable("error"))
             callback.onResult(createTestData(params.key, params.pageSize))
 //            val result = mutableListOf<BaseBean>()
 //            result.add(EmptyBean())
