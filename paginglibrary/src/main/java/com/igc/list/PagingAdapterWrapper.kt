@@ -1,18 +1,17 @@
 package com.igc.list
 
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import com.igc.list.paging.NetworkState
 import com.igc.list.paging.NotifyUtil
 import com.igc.list.paging.PageList
 import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.item_append.view.*
-import java.lang.Exception
 
 /**
  * 分页加载adapter 包装类
@@ -20,7 +19,7 @@ import java.lang.Exception
  * @createTime 2019-07-01
  */
 class PagingAdapterWrapper(val adapter: IPagingAdapter) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         private const val TYPE_APPEND = 1001
@@ -61,7 +60,7 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == TYPE_APPEND) {
             AppendViewHolder(
-                LayoutInflater.from(parent.context).inflate(R.layout.item_append, parent, false)
+                    LayoutInflater.from(parent.context).inflate(R.layout.item_append, parent, false)
             )
         } else {
             adapter.onCreateViewHolder(parent, viewType)
@@ -78,9 +77,9 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) :
     }
 
     override fun onBindViewHolder(
-        holder: RecyclerView.ViewHolder,
-        position: Int,
-        payloads: MutableList<Any>
+            holder: RecyclerView.ViewHolder,
+            position: Int,
+            payloads: MutableList<Any>
     ) {
         if (getItemViewType(position) == TYPE_APPEND) {
             (holder as AppendViewHolder).bind(loadMoreState, loadMoreView, loadFinishView)
@@ -110,7 +109,7 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) :
             NetworkState.LOADED,
             NetworkState.COMPLETE,
             NetworkState.COMPLETE_WITHOUT_TEXT -> {
-                notifyUtil.notifyItemChanged(this.itemCount - 1)
+                notifyUtil.notifyItemChanged(notifyUtil.getItemCount())
             }
         }
     }
@@ -128,7 +127,7 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) :
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (hasExtraRow() && position == itemCount - 1) {
+        return if (hasExtraRow() && position == notifyUtil.getItemCount()) {
             TYPE_APPEND
         } else {
             adapter.getItemViewType(position)
@@ -160,7 +159,8 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) :
                 val spanSizeLookup = layoutManager.spanSizeLookup
                 layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
-                        return if (hasExtraRow() && position == itemCount - 1) {
+                        // notifyUtil.getItemCount() == itemCount - 1
+                        return if (hasExtraRow() && position == notifyUtil.getItemCount()) {
                             layoutManager.spanCount
                         } else {
                             spanSizeLookup.getSpanSize(position)
@@ -194,12 +194,16 @@ class PagingAdapterWrapper(val adapter: IPagingAdapter) :
         }
     }
 
-    override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
-        if (itemCount == 0 || holder.adapterPosition == NO_POSITION || getItemViewType(holder.adapterPosition) == TYPE_APPEND) {
-            return
-        }
-        adapter.onViewDetachedFromWindow(holder)
-    }
+    // 修复多次调用bindPageList导致IndexOfBoundException异常注释：如有需要可以放开。
+//    override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
+//        if (itemCount == 0
+//                || holder.adapterPosition == NO_POSITION
+//                || holder.adapterPosition > notifyUtil.getItemCount()
+//                || getItemViewType(holder.adapterPosition) == TYPE_APPEND) {
+//            return
+//        }
+//        adapter.onViewDetachedFromWindow(holder)
+//    }
 
     /**
      * 对StaggeredGridLayoutManager 上拉加载的支持

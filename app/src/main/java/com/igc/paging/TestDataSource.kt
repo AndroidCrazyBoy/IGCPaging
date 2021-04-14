@@ -13,6 +13,7 @@ class TestDataSource : PageKeyDataSource<String, BaseBean>() {
 
     override fun loadInitial(params: LoadParams, callback: LoadCallback<BaseBean>) {
         itemIndex = 0
+        callback.onResult(mutableListOf(EmptyBean()))
         handler.postDelayed({
             callback.onResult(createTestData(params.key, params.pageSize))
 //            val result = mutableListOf<BaseBean>()
@@ -25,10 +26,10 @@ class TestDataSource : PageKeyDataSource<String, BaseBean>() {
     override fun loadAfter(params: LoadParams, callback: LoadCallback<BaseBean>) {
         handler.postDelayed({
             callback.onResult(createTestData(params.key, params.pageSize))
-            if (params.pageIndex > 3) {
+            if (params.pageIndex > 2) {
                 callback.onFinish()
             }
-        }, 300)
+        }, 1300)
     }
 
     private var itemIndex = 0

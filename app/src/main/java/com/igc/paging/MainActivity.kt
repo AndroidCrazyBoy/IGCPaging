@@ -14,21 +14,23 @@ class MainActivity : AppCompatActivity() {
 
     private val repository: TestRepository by lazy { TestRepository() }
 
+    private var index = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val listManager = ListManager.Builder()
-            .setAdapter(buildAdapter())
-            .setLayoutManager(
-                androidx.recyclerview.widget.LinearLayoutManager(
-                    this
+                .setAdapter(buildAdapter())
+                .setLayoutManager(
+                        LinearLayoutManager(
+                                this
+                        )
                 )
-            )
-            .enableNotifyAnim(true)
-            .bindPageList(repository.getTestData("TEST PAGING"))
-            .into(recyclerView, refreshLayout)
-            .build(this)
+                .enableNotifyAnim(true)
+                .bindPageList(repository.getTestData("TEST PAGING"))
+                .into(recyclerView, refreshLayout)
+                .build(this)
 
 
         listManager.observeRefreshState { state ->
@@ -45,17 +47,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         testItemNotify.setOnClickListener {
-            listManager.changePageList {
-                it ?: return@changePageList it
-                (it[0] as TestBean).otherText = "00000000"
-                (it[1] as TestBean).otherText = "11111111"
+//            listManager.changePageList {
+//                it ?: return@changePageList it
+//                (it[0] as TestBean).otherText = "00000000"
+//                (it[1] as TestBean).otherText = "11111111"
 //                it.forEach {
 //                    (it as TestBean).otherText = "123123123"
 //                }
-                it
-            }
+//                it
+//            }
 
-//            listManager.bindPageList(repository.getTestData("REBIND PAGING") as Listing<Any>)
+            listManager.bindPageList(repository.getTestData("REBIND PAGING ${index++}") as Listing<Any>)
         }
 
 //         listManager.bindPageList(repository.getTestData("TEST PAGING"))

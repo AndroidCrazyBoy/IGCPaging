@@ -53,8 +53,9 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
             Logger.e("ListManager submitList -> pageList is null")
             return
         }
-        if (builder.recyclerView?.adapter is PagingAdapterWrapper) {
-            (builder.recyclerView?.adapter as PagingAdapterWrapper).submitList(pageList)
+        val adapter = builder.recyclerView?.adapter
+        if (adapter is PagingAdapterWrapper) {
+            adapter.submitList(pageList)
         }
     }
 
@@ -66,8 +67,9 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
             Logger.e("ListManager setLoadedState -> state is null")
             return
         }
-        if (builder.recyclerView?.adapter is PagingAdapterWrapper) {
-            (builder.recyclerView?.adapter as PagingAdapterWrapper).setLoadedState(state)
+        val adapter = builder.recyclerView?.adapter
+        if (adapter is PagingAdapterWrapper) {
+            adapter.setLoadedState(state)
         }
     }
 
@@ -83,8 +85,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
             setLoadedState(it)
         })
         listing.refreshState?.observe(builder.lifecycleOwner, Observer {
-            it ?: return@Observer
-            when (it.status) {
+            when (it?.status) {
                 Status.SUCCESS,
                 Status.FAILED -> {
                     builder.refreshLayout?.finishPullRefresh()
@@ -93,11 +94,13 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
                 }
             }
         })
+        // 防止重新绑定数据后未及时刷新导致的IndexOfBound异常
+        builder.recyclerView?.adapter?.notifyDataSetChanged()
     }
 
     fun changePageList(
-        onlySizeChange: Boolean = false,
-        block: (old: PageList<Any>?) -> PageList<Any>?
+            onlySizeChange: Boolean = false,
+            block: (old: PageList<Any>?) -> PageList<Any>?
     ) {
         val pageList = listing?.pagedList?.value
         val oldPageList = pageList?.copyPageList(deepCopy = !onlySizeChange)
@@ -116,7 +119,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
      */
     fun retry() {
         checkNotNull(listing) {
-            "you must be call bindWith() before retry()"
+            "you must be call bindPageList() before retry()"
         }
         listing?.retry?.invoke()
     }
@@ -126,7 +129,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
      */
     fun refresh() {
         checkNotNull(listing) {
-            "ListManager you must be call bindWith() before refresh()"
+            "ListManager you must be call bindPageList() before refresh()"
         }
         listing?.refresh?.invoke()
     }
@@ -146,7 +149,9 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
      */
     fun getRefreshResultStateOnce(block: (state: NetworkState?) -> Unit) {
         listing?.refreshState?.observeResultOnce(builder.lifecycleOwner, Observer {
-            block.invoke(it)
+            if (it == NetworkState.LOADED) {
+                block.invoke(it)
+            }
         })
     }
 
@@ -155,7 +160,9 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
      */
     fun getLoadMoreResultStateOnce(block: (state: NetworkState?) -> Unit) {
         listing?.loadMoreState?.observeResultOnce(builder.lifecycleOwner, Observer {
-            block.invoke(it)
+            if (it == NetworkState.LOADED) {
+                block.invoke(it)
+            }
         })
     }
 
@@ -164,7 +171,9 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
      */
     fun observeRefreshState(block: (state: NetworkState?) -> Unit) {
         listing?.refreshState?.observe(builder.lifecycleOwner, Observer {
-            block.invoke(it)
+            if (it == NetworkState.LOADED) {
+                block.invoke(it)
+            }
         })
     }
 
@@ -173,7 +182,9 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
      */
     fun observeLoadMoreState(block: (state: NetworkState?) -> Unit) {
         listing?.loadMoreState?.observe(builder.lifecycleOwner, Observer {
-            block.invoke(it)
+            if (it == NetworkState.LOADED) {
+                block.invoke(it)
+            }
         })
     }
 
@@ -251,9 +262,9 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         }
 
         fun into(
-            recyclerView: RecyclerView,
-            refreshLayout: IRefreshLayout? = null,
-            refreshListener: IRefreshLayout.PullRefreshListener? = null
+                recyclerView: RecyclerView,
+                refreshLayout: IRefreshLayout? = null,
+                refreshListener: IRefreshLayout.PullRefreshListener? = null
         ): Builder {
             this.recyclerView = recyclerView
             this.refreshLayout = refreshLayout
@@ -284,7 +295,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
             this.lifecycleOwner = fragment
             this.context = context
             this.layoutHolder =
-                if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context) else layoutHolder
+                    if (layoutHolder == null) GlobalListInitializer.instance.getListHolderLayout(context) else layoutHolder
             return ViewModelProviders.of(fragment, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     return ListManager(this@Builder) as T
@@ -297,8 +308,8 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
      * 只监听结果状态(监听到一次结果（success or fail）后停止监听)
      */
     private fun LiveData<NetworkState>.observeResultOnce(
-        lifecycleOwner: LifecycleOwner,
-        observer: Observer<NetworkState>
+            lifecycleOwner: LifecycleOwner,
+            observer: Observer<NetworkState>
     ) {
         observe(lifecycleOwner, object : Observer<NetworkState> {
             override fun onChanged(state: NetworkState?) {

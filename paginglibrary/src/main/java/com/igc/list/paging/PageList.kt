@@ -21,7 +21,7 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
     /**
      * adapter notify callback
      */
-    internal val notifyCallbacks = mutableListOf<NotifyCallback>()
+    internal var notifyCallback: NotifyCallback? = null
 
     /**
      * 存储[PageKeyDataSource.filterDuplicatesCondition]返回的数据，用于去重处理
@@ -32,9 +32,9 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
         const val FILTER_IGNORE = -1L
 
         fun <Key, Value> create(
-            key: Key?,
-            config: Config,
-            dataSource: DataSource<Key, Value>
+                key: Key?,
+                config: Config,
+                dataSource: DataSource<Key, Value>
         ): PageList<Value> {
             return ContiguousPageList(key, config, dataSource as PageKeyDataSource<Key, Value>)
         }
@@ -58,15 +58,15 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
     }
 
     private fun notifyChange(oldData: List<T>, newData: List<T>) {
-        notifyCallbacks.forEach {
-            it.onDataChange(oldData, newData)
-        }
+        notifyCallback?.onDataChange(oldData, newData)
     }
 
-    fun addNotifyCallback(callback: NotifyCallback) {
-        if (!notifyCallbacks.contains(callback)) {
-            notifyCallbacks.add(callback)
-        }
+    fun setNotifyCallback(callback: NotifyCallback) {
+        notifyCallback = callback
+    }
+
+    fun resetNotifyCallback() {
+        notifyCallback = null
     }
 
     override val size: Int
@@ -84,7 +84,7 @@ abstract class PageList<T>(val dataSource: PageKeyDataSource<*, T>) : AbstractLi
         }
         copyResult.pageStore.addAll(if (deepCopy) deepCopy(pageStore) else pageStore)
         copyResult.filterDuplicateIds.addAll(filterDuplicateIds)
-        copyResult.notifyCallbacks.addAll(notifyCallbacks)
+        copyResult.notifyCallback = notifyCallback
         return copyResult
     }
 

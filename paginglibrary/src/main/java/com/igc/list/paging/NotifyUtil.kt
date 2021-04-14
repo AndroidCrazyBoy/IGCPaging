@@ -5,7 +5,6 @@ import android.os.Looper
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.igc.list.IPagingAdapter
-import java.lang.Exception
 
 /**
  * 辅助更新列表工具
@@ -24,7 +23,7 @@ class NotifyUtil(val adapter: IPagingAdapter) {
             try {
                 // 新数据或老数据如果是空数据集，diffUtil会更新失败
                 if (newData.isEmpty() || oldData.isEmpty()) {
-                    adapter.notifyDataSetChanged()
+                    postNotifyDataAdapter()
                 } else {
                     val diffResult = DiffUtil.calculateDiff(DefaultDiffCallBack(oldData, newData))
                     diffResult.dispatchUpdatesTo(adapter as RecyclerView.Adapter<*>)
@@ -67,9 +66,10 @@ class NotifyUtil(val adapter: IPagingAdapter) {
     }
 
     fun <T> submitList(pageList: PageList<T>, oldPageList: PageList<*>?) {
+        this.pageList?.resetNotifyCallback()
         this.pageList = pageList
+        this.pageList?.setNotifyCallback(notifyCallback)
         this.adapter.itemData = pageList
-        pageList.addNotifyCallback(notifyCallback)
         oldPageList?.let {
             notifyCallback.onDataChange(it, pageList)
         }
@@ -86,7 +86,7 @@ class NotifyUtil(val adapter: IPagingAdapter) {
     }
 
     private inner class DefaultDiffCallBack(var oldData: List<*>, var newData: List<*>) :
-        DiffUtil.Callback() {
+            DiffUtil.Callback() {
         override fun getOldListSize(): Int {
             return oldData.size
         }
