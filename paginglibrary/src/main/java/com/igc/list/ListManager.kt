@@ -84,16 +84,12 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
             submitList(it)
         })
         listing.loadMoreState?.observe(builder.lifecycleOwner, Observer {
-            if (it == NetworkState.LOADED || it.status == Status.FAILED) {
-                observeLoadMoreBlock?.invoke(it)
-            }
+            observeLoadMoreBlock?.invoke(it)
             setLoadedState(it)
         })
         listing.refreshState?.observe(builder.lifecycleOwner, Observer {
-            if (it == NetworkState.LOADED || it.status == Status.FAILED) {
-                observeRefreshBlock?.invoke(it)
-                builder.refreshLayout?.finishPullRefresh()
-            }
+            observeRefreshBlock?.invoke(it)
+            builder.refreshLayout?.finishPullRefresh()
         })
         // 防止重新绑定数据后未及时刷新导致的IndexOfBound异常
         builder.recyclerView?.adapter?.notifyDataSetChanged()

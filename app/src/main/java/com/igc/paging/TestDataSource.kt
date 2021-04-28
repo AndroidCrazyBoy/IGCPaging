@@ -12,11 +12,15 @@ class TestDataSource : PageKeyDataSource<String, BaseBean>() {
     private val handler: Handler = Handler()
 
     override fun loadInitial(params: LoadParams, callback: LoadCallback<BaseBean>) {
+        val list = mutableListOf<BaseBean>()
+        list.add(TestBean("Title"))
         itemIndex = 0
-        callback.onResult(mutableListOf(EmptyBean()))
+        callback.onResult(list)
         handler.postDelayed({
 //            callback.onError(Throwable("error"))
-            callback.onResult(createTestData(params.key, params.pageSize))
+            list.addAll(createTestData(params.key, params.pageSize))
+            callback.onResult(list)
+            callback.onFinishWithoutNoMoreData()
 //            val result = mutableListOf<BaseBean>()
 //            result.add(EmptyBean())
 //            callback.onResult(result.toMutableList())
