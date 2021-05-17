@@ -5,6 +5,7 @@ import android.os.Looper
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.igc.list.IPagingAdapter
+import com.orhanobut.logger.Logger
 
 /**
  * 辅助更新列表工具
@@ -29,6 +30,7 @@ class NotifyUtil(val adapter: IPagingAdapter) {
                     diffResult.dispatchUpdatesTo(adapter as RecyclerView.Adapter<*>)
                 }
             } catch (e: Exception) {
+                Logger.e(e, "Paging NotifyUtil")
                 postNotifyDataAdapter()
             }
         }
@@ -86,7 +88,7 @@ class NotifyUtil(val adapter: IPagingAdapter) {
     }
 
     private inner class DefaultDiffCallBack(var oldData: List<*>, var newData: List<*>) :
-            DiffUtil.Callback() {
+        DiffUtil.Callback() {
         override fun getOldListSize(): Int {
             return oldData.size
         }

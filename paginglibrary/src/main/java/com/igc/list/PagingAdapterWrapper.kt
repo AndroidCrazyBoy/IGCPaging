@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.item_append.view.*
  * @author baolongxiang
  * @createTime 2019-07-01
  */
-class PagingAdapterWrapper(val adapter: IPagingAdapter) :
+class PagingAdapterWrapper(private val adapter: IPagingAdapter) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
