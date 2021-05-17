@@ -43,7 +43,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
         builder.refreshLayout?.setOnPullRefreshListener(this)
         // 绑定listing（数据及状态）
         builder.listing?.let {
-            bindPageList(it)
+            bindPageList(it, false)
         }
     }
 
@@ -79,6 +79,10 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
      * 将listing与ListManager绑定
      */
     fun bindPageList(listing: Listing<Any>) {
+        bindPageList(listing, true)
+    }
+
+    private fun bindPageList(listing: Listing<Any>, manualNotify: Boolean = true) {
         this.listing = listing
         listing.pagedList?.observe(builder.lifecycleOwner, Observer {
             submitList(it)
@@ -92,7 +96,7 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
             builder.refreshLayout?.finishPullRefresh()
         })
         // 防止重新绑定数据后未及时刷新导致的IndexOfBound异常
-        builder.recyclerView?.adapter?.notifyDataSetChanged()
+        if (manualNotify) builder.recyclerView?.adapter?.notifyDataSetChanged()
     }
 
     fun changePageList(
@@ -198,6 +202,8 @@ class ListManager(private val builder: Builder) : ViewModel(), IRefreshLayout.Pu
     override fun onCleared() {
         super.onCleared()
         listing?.destroy?.invoke()
+        observeRefreshBlock = null
+        observeLoadMoreBlock = null
     }
 
     @Suppress("UNCHECKED_CAST")
